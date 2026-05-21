@@ -299,8 +299,13 @@ async function iniciarCamera(id){
       }
     },
     (decodedText)=>{
-      procurarPessoa(decodedText.trim());
-    }
+
+  console.log("Código lido:", decodedText);
+
+  alert("Código lido: " + decodedText);
+
+  procurarPessoa(decodedText.trim());
+}
   );
 }
 
