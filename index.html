@@ -133,6 +133,43 @@ body{
   border-radius:15px;
   font-weight:bold;
 }
+
+  .popup{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,.7);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+
+.popup-box{
+  width:350px;
+  background:#1e293b;
+  border-radius:25px;
+  padding:25px;
+}
+
+.popup-box h2{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.popup-box input,
+.popup-box select{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:15px;
+  margin-bottom:15px;
+  background:#334155;
+  color:white;
+}
+  
 </style>
 </head>
 <body>
@@ -143,6 +180,10 @@ body{
     <h1>SPJVP Scanner</h1>
     <p>Escaneie o QR ou código do crachá</p>
   </div>
+
+  <button class="btn" onclick="abrirLogin()">
+  👤 Fazer Login
+</button>
 
   <div id="reader"></div>
 
@@ -320,7 +361,192 @@ Html5Qrcode.getCameras()
 
 });
 
+  window.abrirLogin = function(){
+  document.getElementById(
+    "popupLogin"
+  ).style.display = "flex";
+}
+
+window.fecharLogin = function(){
+  document.getElementById(
+    "popupLogin"
+  ).style.display = "none";
+}
+
+window.fazerLogin =
+async function(){
+
+  const id =
+  document.getElementById(
+    "loginId"
+  ).value.trim();
+
+  const cargo =
+  document.getElementById(
+    "loginCargo"
+  ).value;
+
+  if(!id || !cargo){
+    alert("Preencha tudo");
+    return;
+  }
+
+  try{
+
+    // aluno
+    let ref =
+    doc(db,"alunos",id);
+
+    let snap =
+    await getDoc(ref);
+
+    if(snap.exists()){
+
+      const data =
+      snap.data();
+
+      if(data.cargo === cargo){
+
+        localStorage.setItem(
+          "usuario",
+          JSON.stringify({
+            id,
+            nome:data.nome,
+            cargo:data.cargo,
+            tipo:"aluno"
+          })
+        );
+
+        location.href =
+        "portal-aluno.html";
+
+        return;
+      }
+    }
+
+    // professor/monitor
+    ref =
+    doc(db,"professores",id);
+
+    snap =
+    await getDoc(ref);
+
+    if(snap.exists()){
+
+      const data =
+      snap.data();
+
+      if(data.cargo === cargo){
+
+        localStorage.setItem(
+          "usuario",
+          JSON.stringify({
+            id,
+            nome:data.nome,
+            cargo:data.cargo,
+            tipo:"admin"
+          })
+        );
+
+        location.href =
+        "portal-monitor-prof.html";
+
+        return;
+      }
+    }
+
+    alert(
+      "ID ou cargo incorreto"
+    );
+
+  }catch(err){
+    console.error(err);
+    alert("Erro no login");
+  }
+}
+
 </script>
 
+  <div id="popupLogin" class="popup">
+
+  <div class="popup-box">
+
+    <h2>Fazer Login</h2>
+
+    <input
+      type="text"
+      id="loginId"
+      placeholder="Digite seu ID"
+    >
+
+    <select id="loginCargo">
+
+      <option value="">
+        Selecione o cargo
+      </option>
+
+      <option>
+        Marcenaria: matutino t52 G: A
+      </option>
+
+      <option>
+        Marcenaria: matutino t52 G: B
+      </option>
+
+      <option>
+        Marcenaria: matutino t52 G: C
+      </option>
+
+      <option>
+        Marcenaria: vespertino t51 G: A
+      </option>
+
+      <option>
+        Marcenaria: vespertino t51 G: B
+      </option>
+
+      <option>
+        Marcenaria: vespertino t51 G: C
+      </option>
+
+      <option>
+        Marcenaria: Vespertino t50 G: A
+      </option>
+
+      <option>
+        Marcenaria: Vespertino t50 G: B
+      </option>
+
+      <option>
+        Marcenaria: Vespertino t50 G: C
+      </option>
+
+      <option>
+        Marcenaria: Vespertino Monitoria
+      </option>
+
+      <option>
+        Marcenaria: Professor(a)
+      </option>
+
+    </select>
+
+    <button class="btn"
+      onclick="fazerLogin()">
+      Entrar
+    </button>
+
+    <button
+      class="btn"
+      style="background:red"
+      onclick="fecharLogin()"
+    >
+      Fechar
+    </button>
+
+  </div>
+
+</div>
+  
 </body>
 </html>
