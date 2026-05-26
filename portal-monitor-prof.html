@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal Admin</title>
+<style>
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:linear-gradient(135deg,#0f172a,#1e293b);
+  color:white;
+  padding:20px;
+}
+.container{max-width:1100px;margin:auto}
+.card{
+ background:rgba(255,255,255,.08);
+ border-radius:20px;
+ padding:20px;
+ margin-bottom:20px;
+}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+ gap:12px;
+}
+button{
+ padding:14px;
+ border:none;
+ border-radius:14px;
+ background:#38bdf8;
+ color:white;
+ font-size:16px;
+ cursor:pointer;
+}
+input,select{
+ width:100%;
+ padding:12px;
+ border:none;
+ border-radius:12px;
+ margin-bottom:10px;
+}
+.item{
+ background:rgba(255,255,255,.06);
+ padding:12px;
+ border-radius:12px;
+ margin-bottom:10px;
+}
+table{
+ width:100%;
+ border-collapse:collapse;
+}
+td,th{
+ border:1px solid rgba(255,255,255,.2);
+ padding:10px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="card">
+<h1 id="ola">Portal Admin</h1>
+<p id="cargo"></p>
+</div>
+
+<div class="grid">
+<button onclick="mostrarAdicionar()">➕ Adicionar Aluno</button>
+<button onclick="mostrarTurma()">👥 Ver Turma</button>
+<button onclick="mostrarAvaliar()">📝 Avaliar Turma</button>
+<button onclick="mostrarPedidos()">📦 Pedidos</button>
+<button onclick="mostrarAtividades()">📚 Atividades</button>
+</div>
+
+<div class="card" id="conteudo">
+Selecione uma opção.
+</div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+ getFirestore, collection, getDocs, query, where,
+ addDoc, setDoc, doc, getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAyXEqSP0WG5CPw7ZrMQ6v5WUb_OPi_UoI",
+  authDomain: "spjvp-49fde.firebaseapp.com",
+  projectId: "spjvp-49fde",
+  storageBucket: "spjvp-49fde.firebasestorage.app",
+  messagingSenderId: "790148342609",
+  appId: "1:790148342609:web:18a3a59a4d52ba50572970"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const usuario = JSON.parse(localStorage.getItem("usuario"));
+
+if(!usuario || usuario.tipo !== "admin"){
+ location.href = "index.html";
+}
+
+document.getElementById("ola").innerText =
+`Olá, ${usuario.nome}`;
+
+document.getElementById("cargo").innerText =
+usuario.cargo;
+
+const box = document.getElementById("conteudo");
+
+function gerarId(nome){
+ const partes = nome.trim().split(" ");
+ const ini1 = partes[0][0].toUpperCase();
+ const ini2 = partes[partes.length-1][0].toUpperCase();
+ return Math.floor(Math.random()*90+10) +
+ ini1 + ini2 +
+ Math.floor(Math.random()*9000+1000);
+}
+
+window.mostrarAdicionar = function(){
+ box.innerHTML = `
+ <h2>Adicionar Aluno</h2>
+ <input id="nome" placeholder="Nome">
+ <select id="cargoAluno">
+ <option>Marcenaria: matutino t52 G: A</option>
+ <option>Marcenaria: matutino t52 G: B</option>
+ <option>Marcenaria: matutino t52 G: C</option>
+ <option>Marcenaria: vespertino t51 G: A</option>
+ <option>Marcenaria: vespertino t51 G: B</option>
+ <option>Marcenaria: vespertino t51 G: C</option>
+ <option>Marcenaria: Vespertino t50 G: A</option>
+ <option>Marcenaria: Vespertino t50 G: B</option>
+ <option>Marcenaria: Vespertino t50 G: C</option>
+ </select>
+ <input id="motivo" placeholder="Motivo">
+ <input id="foto" placeholder="Link da imagem (opcional)">
+ <button onclick="salvarAluno()">Salvar</button>
+ `;
+}
+
+window.salvarAluno = async function(){
+ const nome = document.getElementById("nome").value;
+ const cargo = document.getElementById("cargoAluno").value;
+ const motivo = document.getElementById("motivo").value;
+ const foto = document.getElementById("foto").value;
+
+ const id = gerarId(nome);
+
+ await setDoc(doc(db,"alunos",id),{
+  nome,cargo,motivo,
+  foto: foto || "",
+  pedidos:[]
+ });
+
+ alert("Aluno criado! ID: " + id);
+}
+
+window.mostrarTurma = async function(){
+ const turma = prompt("Digite o cargo/turma");
+ const q = query(collection(db,"alunos"),where("cargo","==",turma));
+ const snap = await getDocs(q);
+
+ let html = "<h2>Turma</h2>";
+
+ snap.forEach(doc=>{
+  const d = doc.data();
+  html += `<div class="item">${d.nome}</div>`;
+ });
+
+ box.innerHTML = html;
+}
+
+window.mostrarAvaliar = async function(){
+ const turma = prompt("Digite a turma");
+ const q = query(collection(db,"alunos"),where("cargo","==",turma));
+ const snap = await getDocs(q);
+
+ let html = `
+ <h2>Avaliar Turma</h2>
+ <table>
+ <tr>
+ <th>Nome</th>
+ <th>Obediência</th>
+ <th>Participação</th>
+ </tr>
+ `;
+
+ snap.forEach(docx=>{
+  const d = docx.data();
+  html += `
+  <tr>
+  <td>${d.nome}</td>
+  <td><input id="ob_${d.nome}"></td>
+  <td><input id="pa_${d.nome}"></td>
+  </tr>
+  `;
+ });
+
+ html += `</table>
+ <button onclick="salvarNotas('${turma}')">Salvar</button>`;
+
+ box.innerHTML = html;
+}
+
+window.salvarNotas = async function(turma){
+ const q = query(collection(db,"alunos"),where("cargo","==",turma));
+ const snap = await getDocs(q);
+
+ let obediencia = {};
+ let participacao = {};
+
+ snap.forEach(docx=>{
+  const d = docx.data();
+
+  obediencia[d.nome] =
+  document.getElementById(
+  "ob_" + d.nome).value || "-";
+
+  participacao[d.nome] =
+  document.getElementById(
+  "pa_" + d.nome).value || "-";
+ });
+
+ await setDoc(doc(db,"Notas",turma),{
+  "Obediência":obediencia,
+  "Participação":participacao
+ });
+
+ alert("Notas salvas!");
+}
+
+window.mostrarPedidos = async function(){
+ const snap = await getDocs(collection(db,"alunos"));
+ let html = "<h2>Pedidos</h2>";
+
+ snap.forEach(doc=>{
+  const d = doc.data();
+  (d.pedidos || []).forEach(p=>{
+   html += `<div class="item">
+   <b>${d.nome}</b><br>
+   ${p.texto || ""}
+   </div>`;
+  });
+ });
+
+ box.innerHTML = html;
+}
+
+window.mostrarAtividades = function(){
+ box.innerHTML = `
+ <h2>Nova Atividade</h2>
+ <input id="atividadeNome" placeholder="Nome">
+ <input type="date" id="envio">
+ <input type="date" id="entrega">
+ <input id="turma" placeholder="Cargo/Turma">
+ <button onclick="salvarAtividade()">
+ Salvar
+ </button>
+ `;
+}
+
+window.salvarAtividade = async function(){
+ const nome =
+ document.getElementById("atividadeNome").value;
+
+ const envio =
+ document.getElementById("envio").value;
+
+ const entrega =
+ document.getElementById("entrega").value;
+
+ const turma =
+ document.getElementById("turma").value;
+
+ const ref = doc(db,"atividades",turma);
+ const snap = await getDoc(ref);
+
+ let atividades = [];
+
+ if(snap.exists()){
+  atividades =
+  snap.data().atividades || [];
+ }
+
+ atividades.push({
+  nome,envio,entrega
+ });
+
+ await setDoc(ref,{
+  atividades
+ });
+
+ alert("Atividade salva!");
+}
+</script>
+</body>
+</html>
