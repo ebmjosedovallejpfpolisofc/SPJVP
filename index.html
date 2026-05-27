@@ -321,11 +321,6 @@ return;
 
 try{
 
-const cargosAdmin = [
-"Marcenaria: Vespertino Monitoria",
-"Marcenaria: Professor(a)"
-];
-
 let ref = doc(db,"alunos",id);
 let snap = await getDoc(ref);
 
@@ -346,8 +341,16 @@ alert("Cargo incorreto");
 return;
 }
 
+const cargoLower =
+cargo.toLowerCase();
+
+const ehAdmin =
+cargoLower.includes("monitor")
+||
+cargoLower.includes("professor");
+
 const tipo =
-cargosAdmin.includes(cargo)
+ehAdmin
 ? "admin"
 : "aluno";
 
