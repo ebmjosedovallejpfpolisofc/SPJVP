@@ -125,8 +125,7 @@ Selecione uma opção
 
 <script type="module">
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
 getFirestore,
@@ -138,8 +137,7 @@ doc,
 setDoc,
 getDoc,
 deleteDoc
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
 apiKey:"AIzaSyAyXEqSP0WG5CPw7ZrMQ6v5WUb_OPi_UoI",
@@ -153,7 +151,83 @@ appId:"1:790148342609:web:18a3a59a4d52ba50572970"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const box = document.getElementById("conteudo");
+const box =
+document.getElementById("conteudo");
+
+// ================= TURMAS =================
+const numerosTurma = [41,50,51,52];
+const grupos = ["A","B","C"];
+
+const turmas = [];
+
+numerosTurma.forEach(num=>{
+
+grupos.forEach(g=>{
+
+const turno =
+num === 52
+? "Matutino"
+: "Vespertino";
+
+const turma =
+`Marcenaria ${turno} t${num} G: ${g}`;
+
+turmas.push(turma);
+
+});
+
+});
+
+// ================= TABELA =================
+const tabela =
+document.getElementById("tabela");
+
+tabela.innerHTML = "";
+
+turmas.forEach(turma=>{
+
+const tr =
+document.createElement("tr");
+
+tr.innerHTML = `
+<td>${turma}</td>
+
+<td><button>Avaliar</button></td>
+<td><button>Pedidos</button></td>
+<td><button>Atividades</button></td>
+<td><button>Ver</button></td>
+<td><button>Chamada</button></td>
+<td><button>Turma</button></td>
+<td><button>Aluno</button></td>
+`;
+
+const buttons =
+tr.querySelectorAll("button");
+
+buttons[0].onclick =
+()=>avaliar(turma);
+
+buttons[1].onclick =
+()=>pedidos(turma);
+
+buttons[2].onclick =
+()=>atividades(turma);
+
+buttons[3].onclick =
+()=>verAtividades(turma);
+
+buttons[4].onclick =
+()=>chamada(turma);
+
+buttons[5].onclick =
+()=>verTurma(turma);
+
+buttons[6].onclick =
+()=>addAluno(turma);
+
+tabela.appendChild(tr);
+
+});
 
 // ================= TURMAS =================
 const numerosTurma = [41,50,51,52];
