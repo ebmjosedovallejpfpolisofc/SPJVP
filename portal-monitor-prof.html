@@ -1,49 +1,1220 @@
-// ================= TURMAS =================
-const tabela = document.getElementById("tabela");
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-const numerosTurma = [41, 50, 51, 52];
-const grupos = ["A", "B", "C"];
+<title>Portal Admin - Upgrade</title>
+
+<style>
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:linear-gradient(135deg,#0f172a,#1e293b);
+color:white;
+padding:20px;
+}
+
+.container{
+max-width:1400px;
+margin:auto;
+}
+
+.card{
+background:rgba(255,255,255,.08);
+padding:20px;
+border-radius:20px;
+margin-bottom:20px;
+backdrop-filter:blur(8px);
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+th,td{
+border:1px solid rgba(255,255,255,.2);
+padding:10px;
+text-align:center;
+}
+
+th{
+background:#0f172a;
+}
+
+button{
+padding:10px 12px;
+border:none;
+border-radius:10px;
+background:#38bdf8;
+color:white;
+cursor:pointer;
+margin:2px;
+transition:.2s;
+font-weight:bold;
+}
+
+button:hover{
+transform:scale(1.03);
+}
+
+.item{
+background:rgba(255,255,255,.06);
+padding:12px;
+margin:8px 0;
+border-radius:12px;
+}
+
+input,select{
+width:100%;
+padding:12px;
+margin:5px 0;
+border-radius:10px;
+border:none;
+background:#334155;
+color:white;
+outline:none;
+}
+
+h1,h2{
+margin-top:0;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+<h1>Portal Admin - Upgrade</h1>
+</div>
+
+<div class="card">
+<table>
+
+<thead>
+<tr>
+<th>Turma</th>
+<th>Avaliar</th>
+<th>Pedidos</th>
+<th>Atividades</th>
+<th>Ver Atividades</th>
+<th>Chamada</th>
+<th>Turma</th>
+<th>Aluno</th>
+</tr>
+</thead>
+
+<tbody id="tabela"></tbody>
+
+</table>
+</div>
+
+<div class="card" id="conteudo">
+Selecione uma opção
+</div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+getDocs,
+query,
+where,
+doc,
+setDoc,
+getDoc,
+deleteDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey:"AIzaSyAyXEqSP0WG5CPw7ZrMQ6v5WUb_OPi_UoI",
+authDomain:"spjvp-49fde.firebaseapp.com",
+projectId:"spjvp-49fde",
+storageBucket:"spjvp-49fde.firebasestorage.app",
+messagingSenderId:"790148342609",
+appId:"1:790148342609:web:18a3a59a4d52ba50572970"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const box = document.getElementById("conteudo");
+
+// ================= TURMAS =================
+const numerosTurma = [41,50,51,52];
+const grupos = ["A","B","C"];
 
 const turmas = [];
 
-numerosTurma.forEach(num => {
-  grupos.forEach(g => {
+numerosTurma.forEach(num=>{
 
-    const turno = num === 52
-      ? "Matutino"
-      : "Vespertino";
+grupos.forEach(g=>{
 
-    const turma =
-      `Marcenaria ${turno} t${num} G: ${g}`;
+const turno =
+num === 52
+? "Matutino"
+: "Vespertino";
 
-    turmas.push(turma);
-  });
+turmas.push(
+`Marcenaria ${turno} t${num} G: ${g}`
+);
+
 });
 
-turmas.forEach(turma => {
-
-  const tr = document.createElement("tr");
-
-  tr.innerHTML = `
-    <td>${turma}</td>
-    <td><button>Avaliar</button></td>
-    <td><button>Pedidos</button></td>
-    <td><button>Atividades</button></td>
-    <td><button>Ver</button></td>
-    <td><button>Chamada</button></td>
-    <td><button>Turma</button></td>
-    <td><button>Aluno</button></td>
-  `;
-
-  const buttons = tr.querySelectorAll("button");
-
-  buttons[0].onclick = () => avaliar(turma);
-  buttons[1].onclick = () => pedidos(turma);
-  buttons[2].onclick = () => atividades(turma);
-  buttons[3].onclick = () => verAtividades(turma);
-  buttons[4].onclick = () => chamada(turma);
-  buttons[5].onclick = () => verTurma(turma);
-  buttons[6].onclick = () => addAluno(turma);
-
-  tabela.appendChild(tr);
 });
+
+// ================= TABELA =================
+const tabela =
+document.getElementById("tabela");
+
+turmas.forEach(turma=>{
+
+const tr =
+document.createElement("tr");
+
+tr.innerHTML = `
+<td>${turma}</td>
+
+<td>
+<button class="avaliar">
+Avaliar
+</button>
+</td>
+
+<td>
+<button class="pedidos">
+Pedidos
+</button>
+</td>
+
+<td>
+<button class="atividades">
+Atividades
+</button>
+</td>
+
+<td>
+<button class="ver">
+Ver
+</button>
+</td>
+
+<td>
+<button class="chamada">
+Chamada
+</button>
+</td>
+
+<td>
+<button class="turma">
+Turma
+</button>
+</td>
+
+<td>
+<button class="aluno">
+Aluno
+</button>
+</td>
+`;
+
+const buttons =
+tr.querySelectorAll("button");
+
+buttons[0].onclick =
+()=>avaliar(turma);
+
+buttons[1].onclick =
+()=>pedidos(turma);
+
+buttons[2].onclick =
+()=>atividades(turma);
+
+buttons[3].onclick =
+()=>verAtividades(turma);
+
+buttons[4].onclick =
+()=>chamada(turma);
+
+buttons[5].onclick =
+()=>verTurma(turma);
+
+buttons[6].onclick =
+()=>addAluno(turma);
+
+tabela.appendChild(tr);
+
+});
+
+// ================= AVALIAR =================
+window.avaliar = async function(turma){
+
+const q = query(
+collection(db,"alunos"),
+where("cargo","==",turma)
+);
+
+const snap = await getDocs(q);
+
+let html = `
+<h2>Avaliar Alunos</h2>
+`;
+
+if(snap.empty){
+html += "Nenhum aluno.";
+box.innerHTML = html;
+return;
+}
+
+snap.forEach(d=>{
+
+const data = d.data();
+
+html += `
+<div class="item">
+<b>${data.nome}</b><br>
+
+ID: ${d.id}<br>
+Motivo:
+${data.motivo || "Nenhum"}
+
+<br><br>
+
+<button onclick="
+removerAluno('${d.id}')
+">
+Remover aluno
+</button>
+</div>
+`;
+
+});
+
+box.innerHTML = html;
+};
+
+// ================= PEDIDOS =================
+window.pedidos = async function(turma){
+
+const q = query(
+collection(db,"alunos"),
+where("cargo","==",turma)
+);
+
+const snap =
+await getDocs(q);
+
+let html =
+`<h2>Pedidos</h2>`;
+
+let encontrou = false;
+
+snap.forEach(d=>{
+
+const aluno = d.data();
+
+const pedidos =
+aluno.pedidos || [];
+
+if(pedidos.length){
+
+encontrou = true;
+
+pedidos.forEach((p,i)=>{
+
+html += `
+<div class="item">
+
+<b>${aluno.nome}</b>
+<br>
+
+Pedido:
+${p.texto || "-"}
+
+<br>
+
+📅
+${p.envio || "-"}
+
+</div>
+`;
+
+});
+
+}
+
+});
+
+if(!encontrou){
+html +=
+"Nenhum pedido.";
+}
+
+box.innerHTML = html;
+};
+
+// ================= VER TURMA =================
+window.verTurma =
+async function(turma){
+
+const q = query(
+collection(db,"alunos"),
+where("cargo","==",turma)
+);
+
+const snap =
+await getDocs(q);
+
+let html =
+`<h2>${turma}</h2>`;
+
+if(snap.empty){
+
+html +=
+"Nenhum aluno.";
+
+box.innerHTML = html;
+return;
+}
+
+snap.forEach(d=>{
+
+html += `
+<div class="item">
+
+${d.data().nome}
+
+<br>
+
+ID:
+${d.id}
+
+</div>
+`;
+
+});
+
+box.innerHTML =
+html;
+};
+
+// ================= ADD ALUNO =================
+window.addAluno =
+function(turma){
+
+box.innerHTML = `
+
+<h2>
+Adicionar Aluno
+</h2>
+
+<p>${turma}</p>
+
+<input
+id="nome"
+placeholder="Nome do aluno"
+>
+
+<input
+id="motivo"
+placeholder="Motivo"
+>
+
+<button
+onclick="
+salvarAluno('${turma}')
+">
+Salvar
+</button>
+
+`;
+
+};
+
+// ================= SALVAR =================
+window.salvarAluno =
+async function(turma){
+
+const nome =
+document
+.getElementById("nome")
+.value
+.trim();
+
+const motivo =
+document
+.getElementById("motivo")
+.value
+.trim();
+
+if(!nome){
+
+alert(
+"Digite o nome."
+);
+
+return;
+}
+
+const id =
+Math.random()
+.toString(36)
+.substring(2,8);
+
+await setDoc(
+doc(db,"alunos",id),
+{
+nome,
+cargo: turma,
+motivo,
+pedidos:[]
+}
+);
+
+alert(
+"Aluno criado!"
+);
+
+verTurma(turma);
+
+};
+
+// ================= REMOVER =================
+window.removerAluno =
+async function(id){
+
+const confirmar =
+confirm(
+"Remover aluno?"
+);
+
+if(!confirmar)
+return;
+
+await deleteDoc(
+doc(db,"alunos",id)
+);
+
+alert(
+"Aluno removido!"
+);
+
+);
+
+// ================= CHAMADA =================
+let chamadaTemp = {};
+
+window.chamada =
+async function(turma){
+
+chamadaTemp = {};
+
+const q = query(
+collection(db,"alunos"),
+where("cargo","==",turma)
+);
+
+const snap =
+await getDocs(q);
+
+let html =
+`
+<h2>Chamada</h2>
+<p>${turma}</p>
+`;
+
+if(snap.empty){
+
+html +=
+"Nenhum aluno.";
+
+box.innerHTML =
+html;
+
+return;
+}
+
+snap.forEach(d=>{
+
+const aluno =
+d.data();
+
+const id =
+d.id;
+
+html += `
+
+<div class="item">
+
+<b>
+${aluno.nome}
+</b>
+
+<br><br>
+
+<button onclick="
+setStatus(
+'${id}',
+'presenca'
+)
+">
+P
+</button>
+
+<button onclick="
+setStatus(
+'${id}',
+'falta_inj'
+)
+">
+FI
+</button>
+
+<button onclick="
+setStatus(
+'${id}',
+'falta_jus'
+)
+">
+FJ
+</button>
+
+</div>
+
+`;
+
+});
+
+html += `
+
+<br>
+
+<button onclick="
+salvarChamada(
+'${turma}'
+)
+">
+
+Salvar chamada
+
+</button>
+
+`;
+
+box.innerHTML =
+html;
+
+};
+
+// ================= STATUS =================
+window.setStatus =
+function(id,status){
+
+if(
+status ===
+"falta_jus"
+){
+
+const justificativa =
+prompt(
+"Digite a justificativa:"
+);
+
+if(!justificativa)
+return;
+
+chamadaTemp[id] = {
+status,
+justificativa
+};
+
+alert(
+"Falta justificada salva."
+);
+
+return;
+}
+
+chamadaTemp[id] = {
+status
+};
+
+alert(
+"Status marcado."
+);
+
+};
+
+// ================= SALVAR CHAMADA =================
+window.salvarChamada =
+async function(turma){
+
+if(
+Object.keys(
+chamadaTemp
+).length === 0
+){
+
+alert(
+"Marque a chamada."
+);
+
+return;
+}
+
+const hoje =
+new Date()
+.toISOString()
+.split("T")[0];
+
+const ref =
+doc(
+db,
+"chamadas",
+`${turma}-${hoje}`
+);
+
+await setDoc(
+ref,
+chamadaTemp,
+{merge:true}
+);
+
+alert(
+"Chamada salva!"
+);
+
+};
+
+// ================= ATIVIDADES =================
+window.atividades =
+function(turma){
+
+box.innerHTML = `
+
+<h2>
+Criar Atividade
+</h2>
+
+<p>${turma}</p>
+
+<input
+id="titulo"
+placeholder="
+Título da atividade
+">
+
+<label>
+Data de início
+</label>
+
+<input
+id="inicio"
+type="date"
+>
+
+<label>
+Data final
+</label>
+
+<input
+id="fim"
+type="date"
+>
+
+<button onclick="
+salvarAtividade(
+'${turma}'
+)
+">
+
+Criar atividade
+
+</button>
+
+`;
+
+};
+
+// ================= SALVAR ATIVIDADE =================
+window.salvarAtividade =
+async function(turma){
+
+const titulo =
+document
+.getElementById("titulo")
+.value
+.trim();
+
+const inicio =
+document
+.getElementById("inicio")
+.value;
+
+const fim =
+document
+.getElementById("fim")
+.value;
+
+if(
+!titulo ||
+!inicio ||
+!fim
+){
+alert(
+"Preencha tudo."
+);
+return;
+}
+
+const ref =
+doc(
+db,
+"atividades",
+turma
+);
+
+const snap =
+await getDoc(ref);
+
+let lista = [];
+
+if(snap.exists()){
+
+lista =
+snap.data()
+.atividades || [];
+
+}
+
+lista.push({
+
+nome: titulo,
+envio: inicio,
+entrega: fim,
+encerrada:false,
+status:{},
+entregas:{}
+
+});
+
+await setDoc(
+ref,
+{
+atividades:lista
+},
+{
+merge:true
+}
+);
+
+alert(
+"Atividade criada!"
+);
+
+verAtividades(
+turma
+);
+
+};
+
+// ================= VER ATIVIDADES =================
+window.verAtividades =
+async function(turma){
+
+const ref =
+doc(
+db,
+"atividades",
+turma
+);
+
+const snap =
+await getDoc(ref);
+
+if(!snap.exists()){
+
+box.innerHTML =
+`
+<h2>
+Sem atividades
+</h2>
+`;
+
+return;
+}
+
+const atividades =
+snap.data()
+.atividades || [];
+
+let html =
+`
+<h2>
+Atividades
+</h2>
+
+<p>${turma}</p>
+`;
+
+if(
+atividades.length === 0
+){
+
+html +=
+"Sem atividades.";
+
+box.innerHTML =
+html;
+
+return;
+}
+
+atividades.forEach(
+(a,i)=>{
+
+const total =
+a.entregas
+?
+Object.keys(
+a.entregas
+).length
+:0;
+
+html += `
+
+<div class="item">
+
+<b>
+${a.nome}
+</b>
+
+<br>
+
+📅
+Início:
+${a.envio}
+
+<br>
+
+⏰
+Entrega:
+${a.entrega}
+
+<br>
+
+Status:
+${
+a.encerrada
+?
+"Encerrada"
+:
+"Em aberto"
+}
+
+<br>
+
+📦
+Entregas:
+${total}
+
+<br><br>
+
+<button onclick="
+verEntregas(
+'${turma}',
+${i}
+)
+">
+Ver entregas
+</button>
+
+<button onclick="
+editarAtividade(
+'${turma}',
+${i}
+)
+">
+Editar
+</button>
+
+<button onclick="
+encerrarAtividade(
+'${turma}',
+${i}
+)
+">
+Encerrar
+</button>
+
+</div>
+
+`;
+
+});
+
+box.innerHTML =
+html;
+
+};
+
+// ================= VER ENTREGAS =================
+window.verEntregas =
+async function(
+turma,
+i
+){
+
+const ref =
+doc(
+db,
+"atividades",
+turma
+);
+
+const snap =
+await getDoc(ref);
+
+const atividade =
+snap.data()
+.atividades[i];
+
+const entregas =
+atividade.entregas || {};
+
+let html =
+`
+<h2>
+Entregas
+</h2>
+
+<p>
+${atividade.nome}
+</p>
+`;
+
+if(
+Object.keys(
+entregas
+).length === 0
+){
+
+html +=
+"Ninguém entregou.";
+
+box.innerHTML =
+html;
+
+return;
+}
+
+Object.keys(
+entregas
+).forEach(id=>{
+
+const aluno =
+entregas[id];
+
+html += `
+<div class="item">
+
+<b>
+${aluno.nome}
+</b>
+
+<br>
+
+Status:
+${aluno.status}
+
+<br>
+
+📅
+${aluno.data}
+
+</div>
+`;
+
+});
+
+box.innerHTML =
+html;
+
+};
+
+// ================= EDITAR =================
+window.editarAtividade =
+async function(
+turma,
+i
+){
+
+const ref =
+doc(
+db,
+"atividades",
+turma
+);
+
+const snap =
+await getDoc(ref);
+
+const atividade =
+snap.data()
+.atividades[i];
+
+box.innerHTML = `
+
+<h2>
+Editar atividade
+</h2>
+
+<input
+id="titulo"
+value="${atividade.nome}"
+>
+
+<input
+id="inicio"
+type="date"
+value="${atividade.envio}"
+>
+
+<input
+id="fim"
+type="date"
+value="${atividade.entrega}"
+>
+
+<button onclick="
+salvarEdicao(
+'${turma}',
+${i}
+)
+">
+Salvar
+</button>
+
+`;
+
+};
+
+// ================= SALVAR EDIÇÃO =================
+window.salvarEdicao =
+async function(
+turma,
+i
+){
+
+const ref =
+doc(
+db,
+"atividades",
+turma
+);
+
+const snap =
+await getDoc(ref);
+
+let atividades =
+snap.data()
+.atividades;
+
+atividades[i].nome =
+document
+.getElementById("titulo")
+.value;
+
+atividades[i].envio =
+document
+.getElementById("inicio")
+.value;
+
+atividades[i].entrega =
+document
+.getElementById("fim")
+.value;
+
+await setDoc(
+ref,
+{
+atividades
+},
+{
+merge:true
+}
+);
+
+alert(
+"Atualizado!"
+);
+
+verAtividades(
+turma
+);
+
+};
+
+// ================= ENCERRAR =================
+window.encerrarAtividade =
+async function(
+turma,
+i
+){
+
+const ref =
+doc(
+db,
+"atividades",
+turma
+);
+
+const snap =
+await getDoc(ref);
+
+let atividades =
+snap.data()
+.atividades;
+
+atividades[i]
+.encerrada = true;
+
+await setDoc(
+ref,
+{
+atividades
+},
+{
+merge:true
+}
+);
+
+alert(
+"Atividade encerrada!"
+);
+
+verAtividades(
+turma
+);
+
+};
+
+</script>
+
+</body>
+</html>
