@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portal do Aluno</title>
+
 <style>
 body{
   margin:0;
@@ -12,32 +13,51 @@ body{
   color:#fff;
   padding:20px;
 }
-.container{max-width:900px;margin:auto}
+
+.container{
+  max-width:900px;
+  margin:auto;
+}
+
 .card{
   background:rgba(255,255,255,.08);
   border-radius:20px;
   padding:20px;
   margin-bottom:20px;
 }
+
 h1{margin:0 0 10px}
+
 .buttons{
- display:grid;
- grid-template-columns:repeat(2,1fr);
- gap:12px;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
 }
+
 button{
- padding:14px;border:none;border-radius:14px;
- background:#38bdf8;color:white;font-size:16px;cursor:pointer;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  background:#38bdf8;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
 }
+
 #content{margin-top:20px}
+
 .item{
- background:rgba(255,255,255,.06);
- padding:14px;border-radius:12px;margin-bottom:10px;
+  background:rgba(255,255,255,.06);
+  padding:14px;
+  border-radius:12px;
+  margin-bottom:10px;
 }
 </style>
 </head>
+
 <body>
 <div class="container">
+
   <div class="card">
     <h1 id="saudacao">Olá</h1>
     <div id="cargo"></div>
@@ -53,12 +73,19 @@ button{
   <div id="content" class="card">
     Selecione uma opção.
   </div>
+
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getFirestore, doc, getDoc, collection, getDocs, query, where
+  getFirestore,
+  doc,
+  getDoc,
+  collection,
+  getDocs,
+  query,
+  where
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -80,7 +107,10 @@ if(!usuario || usuario.tipo !== "aluno"){
 }
 
 const hora = new Date().getHours();
-const periodo = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite";
+const periodo =
+  hora < 12 ? "Bom dia" :
+  hora < 18 ? "Boa tarde" :
+  "Boa noite";
 
 document.getElementById("saudacao").innerText =
 `Olá, ${usuario.nome}, ${periodo}`;
@@ -89,58 +119,109 @@ document.getElementById("cargo").innerText = usuario.cargo;
 
 const content = document.getElementById("content");
 
+// ================= GRUPO =================
 window.mostrarGrupo = async function(){
   content.innerHTML = "<h2>Meu Grupo</h2>";
-  const q = query(collection(db,"alunos"), where("cargo","==",usuario.cargo));
+
+  const q = query(
+    collection(db,"alunos"),
+    where("cargo","==",usuario.cargo)
+  );
+
   const snap = await getDocs(q);
+
   snap.forEach(doc=>{
     const d = doc.data();
     content.innerHTML += `<div class="item">${d.nome}</div>`;
   });
-}
+};
 
+// ================= PEDIDOS =================
 window.mostrarPedidos = async function(){
   const snap = await getDoc(doc(db,"alunos",usuario.id));
-  const pedidos = snap.data().pedidos || [];
-  content.innerHTML = "<h2>Meus Pedidos</h2>";
-  pedidos.forEach(p=>{
-    content.innerHTML += `<div class="item">
-      <b>${p.texto || "Pedido"}</b><br>
-      Envio: ${p.envio || "-"}<br>
-      Entrega: ${p.entrega || "-"}
-    </div>`;
-  });
-}
+  const pedidos = snap.data()?.pedidos || [];
 
+  content.innerHTML = "<h2>Meus Pedidos</h2>";
+
+  pedidos.forEach(p=>{
+    content.innerHTML += `
+      <div class="item">
+        <b>${p.texto || "Pedido"}</b><br>
+        Envio: ${p.envio || "-"}<br>
+        Entrega: ${p.entrega || "-"}
+      </div>
+    `;
+  });
+};
+
+// ================= ATIVIDADES (COM E-MAIL) =================
 window.mostrarAtividades = async function(){
   const snap = await getDoc(doc(db,"atividades",usuario.cargo));
-  content.innerHTML = "<h2>Atividades</h2>";
-  if(!snap.exists()) return content.innerHTML += "Nenhuma atividade.";
-  const atividades = snap.data().atividades || [];
-  atividades.forEach(a=>{
-    content.innerHTML += `<div class="item">
-      <b>${a.nome}</b><br>
-      Envio: ${a.envio}<br>
-      Entrega: ${a.entrega}
-    </div>`;
-  });
-}
 
+  content.innerHTML = "<h2>Atividades</h2>";
+
+  if(!snap.exists()){
+    content.innerHTML += "Nenhuma atividade.";
+    return;
+  }
+
+  const atividades = snap.data().atividades || [];
+
+  atividades.forEach(a=>{
+
+    const assunto = encodeURIComponent(`Atividade: ${a.nome}`);
+
+    const corpo = encodeURIComponent(
+`Atividade: ${a.nome}
+Do aluno: ${usuario.nome} (ID: ${usuario.id})`
+    );
+
+    const mailto =
+`mailto:salete.santos@prof.pmf.sc.gov.br?subject=${assunto}&body=${corpo}`;
+
+    content.innerHTML += `
+      <div class="item">
+        <b>${a.nome}</b><br>
+        Envio: ${a.envio}<br>
+        Entrega: ${a.entrega}<br><br>
+
+        <button onclick="window.location.href='${mailto}'">
+          Enviar atividade por e-mail
+        </button>
+      </div>
+    `;
+  });
+};
+
+// ================= NOTAS =================
 window.mostrarNotas = async function(){
   const turma = usuario.cargo.match(/t(\d+).*G: ([A-C])/i);
   if(!turma) return;
+
   const turmaDoc = `T${turma[1]} G: ${turma[2]}`;
+
   const snap = await getDoc(doc(db,"Notas",turmaDoc));
+
   content.innerHTML = "<h2>Minha Nota</h2>";
-  if(!snap.exists()) return content.innerHTML += "Sem notas.";
+
+  if(!snap.exists()){
+    content.innerHTML += "Sem notas.";
+    return;
+  }
+
   const data = snap.data();
+
   const ob = data["Obediência"]?.[usuario.nome] ?? "-";
   const pa = data["Participação"]?.[usuario.nome] ?? "-";
-  content.innerHTML += `<div class="item">
-    Obediência: ${ob}<br>
-    Participação: ${pa}
-  </div>`;
-}
+
+  content.innerHTML += `
+    <div class="item">
+      Obediência: ${ob}<br>
+      Participação: ${pa}
+    </div>
+  `;
+};
 </script>
+
 </body>
 </html>
