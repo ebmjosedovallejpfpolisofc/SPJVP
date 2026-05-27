@@ -3,48 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal Admin</title>
+<title>Portal Admin - Upgrade</title>
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
-
 body{
-background:linear-gradient(135deg,#0f172a,#1e293b);
+margin:0;
 font-family:Arial,sans-serif;
-min-height:100vh;
+background:linear-gradient(135deg,#0f172a,#1e293b);
 color:white;
 padding:20px;
 }
 
-.container{
-max-width:1400px;
-margin:auto;
-}
+.container{max-width:1400px;margin:auto;}
 
 .card{
 background:rgba(255,255,255,.08);
-border-radius:20px;
 padding:20px;
+border-radius:20px;
 margin-bottom:20px;
-backdrop-filter:blur(10px);
-}
-
-button{
-padding:10px 14px;
-border:none;
-border-radius:12px;
-background:#38bdf8;
-color:white;
-cursor:pointer;
-font-size:15px;
-}
-
-button:hover{
-opacity:.9;
 }
 
 table{
@@ -55,33 +31,37 @@ margin-top:20px;
 
 th,td{
 border:1px solid rgba(255,255,255,.2);
-padding:12px;
+padding:10px;
 text-align:center;
 }
 
-th{
-background:#0f172a;
-}
+th{background:#0f172a;}
 
-td{
-background:rgba(255,255,255,.05);
-}
-
-input{
-width:100%;
-padding:12px;
+button{
+padding:10px 12px;
 border:none;
 border-radius:10px;
-margin:8px 0;
-background:#334155;
+background:#38bdf8;
 color:white;
+cursor:pointer;
+margin:2px;
 }
 
 .item{
 background:rgba(255,255,255,.06);
-padding:12px;
-border-radius:12px;
-margin-bottom:10px;
+padding:10px;
+margin:8px 0;
+border-radius:10px;
+}
+
+input,select{
+width:100%;
+padding:10px;
+margin:5px 0;
+border-radius:8px;
+border:none;
+background:#334155;
+color:white;
 }
 </style>
 </head>
@@ -91,40 +71,29 @@ margin-bottom:10px;
 <div class="container">
 
 <div class="card">
-<h1 id="ola">Portal Admin</h1>
-<p id="cargo"></p>
+<h1>Portal Admin</h1>
 </div>
 
 <div class="card">
-
 <table>
-
 <thead>
-
 <tr>
-<th rowspan="2">Turma</th>
-<th colspan="6">Ações</th>
-</tr>
-
-<tr>
+<th>Turma</th>
 <th>Avaliar</th>
 <th>Pedidos</th>
 <th>Atividades</th>
-<th>Visualizar Atividades</th>
-<th>Visualizar Turma</th>
+<th>Ver Atividades</th>
+<th>Chamada</th>
+<th>Turma</th>
 <th>Aluno</th>
 </tr>
-
 </thead>
-
-<tbody id="tabelaTurmas"></tbody>
-
+<tbody id="tabela"></tbody>
 </table>
-
 </div>
 
 <div class="card" id="conteudo">
-Selecione uma opção.
+Selecione uma opção
 </div>
 
 </div>
@@ -132,7 +101,6 @@ Selecione uma opção.
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
 import {
 getFirestore,
 collection,
@@ -141,7 +109,8 @@ query,
 where,
 doc,
 setDoc,
-getDoc
+getDoc,
+deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -156,118 +125,174 @@ appId:"1:790148342609:web:18a3a59a4d52ba50572970"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const usuario = JSON.parse(localStorage.getItem("usuario"));
-
-if(!usuario || usuario.tipo !== "admin"){
-location.href = "index.html";
-}
-
-document.getElementById("ola").innerText = `Olá, ${usuario.nome}`;
-document.getElementById("cargo").innerText = usuario.cargo;
-
 const box = document.getElementById("conteudo");
 
-const turmas = [];
+const turmas = [
+"Marcenaria t41 G: A",
+"Marcenaria t41 G: B",
+"Marcenaria t41 G: C"
+];
 
-[41,50,51,52].forEach(turma=>{
-["A","B","C"].forEach(grupo=>{
-let periodo = turma == 52 ? "matutino" : "vespertino";
-turmas.push(`Marcenaria: ${periodo} t${turma} G: ${grupo}`);
-});
-});
-
-const tabela = document.getElementById("tabelaTurmas");
+// ================= TABELA =================
+const tabela = document.getElementById("tabela");
 
 turmas.forEach(turma=>{
-
 tabela.innerHTML += `
 <tr>
 <td>${turma}</td>
-
-<td><button onclick="avaliarTurma('${turma}')">Avaliar</button></td>
-<td><button onclick="verPedidos('${turma}')">Pedidos</button></td>
-<td><button onclick="criarAtividade('${turma}')">Atividades</button></td>
-<td><button onclick="visualizarAtividades('${turma}')">Ver</button></td>
-<td><button onclick="visualizarTurma('${turma}')">Turma</button></td>
-<td><button onclick="mostrarAdicionar('${turma}')">Adicionar</button></td>
+<td><button onclick="avaliar('${turma}')">Avaliar</button></td>
+<td><button onclick="pedidos('${turma}')">Pedidos</button></td>
+<td><button onclick="atividades('${turma}')">Atividades</button></td>
+<td><button onclick="verAtividades('${turma}')">Ver</button></td>
+<td><button onclick="chamada('${turma}')">Chamada</button></td>
+<td><button onclick="verTurma('${turma}')">Turma</button></td>
+<td><button onclick="addAluno('${turma}')">Aluno</button></td>
 </tr>
 `;
 });
 
+// ================= TURMA =================
+window.verTurma = async function(turma){
+const q = query(collection(db,"alunos"),where("cargo","==",turma));
+const snap = await getDocs(q);
+
+let html = `<h2>Turma</h2>`;
+
+snap.forEach(d=>{
+html += `<div class="item">${d.data().nome} - ${d.id}</div>`;
+});
+
+box.innerHTML = html;
+};
+
 // ================= ADICIONAR ALUNO =================
-window.mostrarAdicionar = function(turma){
+window.addAluno = function(turma){
 
 box.innerHTML = `
 <h2>Adicionar Aluno</h2>
+<p>${turma}</p>
 
-<p>Turma selecionada:</p>
-<b>${turma}</b>
-
-<input id="nome" placeholder="Nome do aluno">
+<input id="nome" placeholder="Nome">
 <input id="motivo" placeholder="Motivo">
-<input id="foto" placeholder="Foto (opcional)">
 
 <button onclick="salvarAluno('${turma}')">Salvar</button>
 `;
 };
 
-function gerarId(nome){
-const p = nome.trim().split(" ");
-return Math.floor(Math.random()*90+10)
-+ p[0][0].toUpperCase()
-+ p[p.length-1][0].toUpperCase()
-+ Math.floor(Math.random()*9000+1000);
-}
-
 window.salvarAluno = async function(turma){
-
 const nome = document.getElementById("nome").value;
 const motivo = document.getElementById("motivo").value;
-const foto = document.getElementById("foto").value;
 
-if(!nome || !motivo){
-alert("Preencha tudo");
-return;
-}
-
-const id = gerarId(nome);
+const id = Math.random().toString(36).substr(2,6);
 
 await setDoc(doc(db,"alunos",id),{
 nome,
 cargo: turma,
 motivo,
-foto: foto || "",
 pedidos:[]
 });
 
-alert("Aluno criado! ID: " + id);
+alert("Aluno criado");
 };
 
-// ================= TURMA =================
-window.visualizarTurma = async function(turma){
-
+// ================= CHAMADA =================
+window.chamada = async function(turma){
 const q = query(collection(db,"alunos"),where("cargo","==",turma));
 const snap = await getDocs(q);
 
-let html = `<h2>Alunos da Turma</h2><h3>${turma}</h3>`;
-
-if(snap.empty){
-box.innerHTML = html + `<div class="item">Nenhum aluno.</div>`;
-return;
-}
+let html = `<h2>Chamada</h2>`;
 
 snap.forEach(d=>{
+const id = d.id;
 const data = d.data();
 
 html += `
 <div class="item">
-<b>Nome:</b> ${data.nome}<br>
-<b>ID:</b> ${d.id}
+${data.nome}<br>
+
+<button onclick="status('${id}','presenca','${turma}')">P</button>
+<button onclick="status('${id}','falta_inj','${turma}')">FI</button>
+<button onclick="status('${id}','falta_jus','${turma}')">FJ</button>
+<button onclick="desistir('${id}')">Desistir</button>
 </div>
 `;
 });
 
 box.innerHTML = html;
+};
+
+window.status = async function(id,status,turma){
+const ref = doc(db,"chamadas",turma+"-"+new Date().toISOString().split('T')[0]);
+
+await setDoc(ref,{
+[id]:status
+},{merge:true});
+
+alert("Salvo");
+};
+
+window.desistir = async function(id){
+await deleteDoc(doc(db,"alunos",id));
+alert("Aluno removido");
+};
+
+// ================= ATIVIDADES =================
+window.verAtividades = async function(turma){
+const ref = doc(db,"atividades",turma);
+const snap = await getDoc(ref);
+
+let html = `<h2>Atividades</h2>`;
+
+if(!snap.exists()){
+box.innerHTML = "Nenhuma atividade";
+return;
+}
+
+const at = snap.data().atividades || [];
+
+at.forEach((a,i)=>{
+html += `
+<div class="item">
+<b>${a.nome}</b><br>
+📅 ${a.envio} - ⏰ ${a.entrega}<br>
+
+<button onclick="verEntregas('${turma}',${i})">Ver entregas</button>
+<button onclick="encerrar('${turma}',${i})">Encerrar</button>
+</div>
+`;
+});
+
+box.innerHTML = html;
+};
+
+window.verEntregas = async function(turma,i){
+const ref = doc(db,"atividades",turma);
+const snap = await getDoc(ref);
+
+const at = snap.data().atividades[i];
+
+let html = `<h2>Entregas</h2>`;
+
+const entregas = at.entregas || {};
+
+Object.keys(entregas).forEach(id=>{
+html += `<div class="item">${entregas[id].nome} - ${entregas[id].data}</div>`;
+});
+
+box.innerHTML = html;
+};
+
+window.encerrar = async function(turma,i){
+const ref = doc(db,"atividades",turma);
+const snap = await getDoc(ref);
+
+let at = snap.data().atividades;
+
+at[i].encerrada = true;
+
+await setDoc(ref,{atividades:at});
+
+alert("Atividade encerrada");
 };
 
 </script>
