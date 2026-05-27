@@ -149,7 +149,13 @@ window.salvarAluno = async function(){
 
  const id = gerarId(nome);
 
- await setDoc(doc(db,"alunos",id),{
+ const turmaFormatada =
+turma.match(/t(\\d+).*G: ([A-C])/i);
+
+const nomeTurma =
+`T${turmaFormatada[1]} G: ${turmaFormatada[2]}`;
+
+await setDoc(doc(db,"Notas",nomeTurma),{
   nome,cargo,motivo,
   foto: foto || "",
   pedidos:[]
@@ -206,25 +212,43 @@ window.mostrarAvaliar = async function(){
 }
 
 window.salvarNotas = async function(turma){
- const q = query(collection(db,"alunos"),where("cargo","==",turma));
- const snap = await getDocs(q);
+
+ const q =
+ query(
+ collection(db,"alunos"),
+ where("cargo","==",turma)
+ );
+
+ const snap =
+ await getDocs(q);
 
  let obediencia = {};
  let participacao = {};
 
  snap.forEach(docx=>{
+
   const d = docx.data();
 
   obediencia[d.nome] =
   document.getElementById(
-  "ob_" + d.nome).value || "-";
+  "ob_" + d.nome
+  ).value || "-";
 
   participacao[d.nome] =
   document.getElementById(
-  "pa_" + d.nome).value || "-";
+  "pa_" + d.nome
+  ).value || "-";
  });
 
- await setDoc(doc(db,"Notas",turma),{
+ const turmaFormatada =
+ turma.match(/t(\\d+).*G: ([A-C])/i);
+
+ const nomeTurma =
+ `T${turmaFormatada[1]} G: ${turmaFormatada[2]}`;
+
+ await setDoc(
+ doc(db,"Notas",nomeTurma),
+ {
   "Obediência":obediencia,
   "Participação":participacao
  });
