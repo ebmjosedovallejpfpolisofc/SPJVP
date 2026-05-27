@@ -1,359 +1,49 @@
-<script type="module">
+// ================= TURMAS =================
+const tabela = document.getElementById("tabela");
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-getFirestore,
-collection,
-getDocs,
-query,
-where,
-doc,
-setDoc,
-getDoc,
-deleteDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-apiKey:"AIzaSyAyXEqSP0WG5CPw7ZrMQ6v5WUb_OPi_UoI",
-authDomain:"spjvp-49fde.firebaseapp.com",
-projectId:"spjvp-49fde",
-storageBucket:"spjvp-49fde.firebasestorage.app",
-messagingSenderId:"790148342609",
-appId:"1:790148342609:web:18a3a59a4d52ba50572970"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-const box = document.getElementById("conteudo");
-
-// ================= TURMAS AUTOMÁTICAS =================
 const numerosTurma = [41, 50, 51, 52];
 const grupos = ["A", "B", "C"];
 
 const turmas = [];
 
-numerosTurma.forEach(num=>{
-grupos.forEach(g=>{
+numerosTurma.forEach(num => {
+  grupos.forEach(g => {
 
-const turno = (num === 52) ? "Matutino" : "Vespertino";
+    const turno = num === 52
+      ? "Matutino"
+      : "Vespertino";
 
-turmas.push(`Marcenaria ${turno} t${num} G: ${g}`);
+    const turma =
+      `Marcenaria ${turno} t${num} G: ${g}`;
 
-});
-});
-
-// ================= TABELA =================
-const tabela = document.getElementById("tabela");
-
-turmas.forEach(turma=>{
-tabela.innerHTML += `
-<tr>
-<td>${turma}</td>
-<td><button onclick="avaliar('${turma}')">Avaliar</button></td>
-<td><button onclick="pedidos('${turma}')">Pedidos</button></td>
-<td><button onclick="atividades('${turma}')">Atividades</button></td>
-<td><button onclick="verAtividades('${turma}')">Ver</button></td>
-<td><button onclick="chamada('${turma}')">Chamada</button></td>
-<td><button onclick="verTurma('${turma}')">Turma</button></td>
-<td><button onclick="addAluno('${turma}')">Aluno</button></td>
-</tr>
-`;
+    turmas.push(turma);
+  });
 });
 
-// ================= AVALIAR =================
-window.avaliar = async function(turma){
+turmas.forEach(turma => {
 
-const q = query(collection(db,"alunos"),where("cargo","==",turma));
-const snap = await getDocs(q);
+  const tr = document.createElement("tr");
 
-let html = `<h2>Avaliar Alunos</h2>`;
+  tr.innerHTML = `
+    <td>${turma}</td>
+    <td><button>Avaliar</button></td>
+    <td><button>Pedidos</button></td>
+    <td><button>Atividades</button></td>
+    <td><button>Ver</button></td>
+    <td><button>Chamada</button></td>
+    <td><button>Turma</button></td>
+    <td><button>Aluno</button></td>
+  `;
 
-snap.forEach(d=>{
-html += `
-<div class="item">
-<b>${d.data().nome}</b><br>
-ID: ${d.id}<br>
-Motivo: ${d.data().motivo || "Nenhum"}
-</div>
-`;
+  const buttons = tr.querySelectorAll("button");
+
+  buttons[0].onclick = () => avaliar(turma);
+  buttons[1].onclick = () => pedidos(turma);
+  buttons[2].onclick = () => atividades(turma);
+  buttons[3].onclick = () => verAtividades(turma);
+  buttons[4].onclick = () => chamada(turma);
+  buttons[5].onclick = () => verTurma(turma);
+  buttons[6].onclick = () => addAluno(turma);
+
+  tabela.appendChild(tr);
 });
-
-box.innerHTML = html;
-};
-
-// ================= PEDIDOS =================
-window.pedidos = async function(turma){
-
-const q = query(collection(db,"alunos"),where("cargo","==",turma));
-const snap = await getDocs(q);
-
-let html = `<h2>Pedidos</h2>`;
-
-snap.forEach(d=>{
-html += `
-<div class="item">
-<b>${d.data().nome}</b><br>
-${d.data().motivo || "Sem pedidos"}
-</div>
-`;
-});
-
-box.innerHTML = html;
-};
-
-// ================= TURMA =================
-window.verTurma = async function(turma){
-
-const q = query(collection(db,"alunos"),where("cargo","==",turma));
-const snap = await getDocs(q);
-
-let html = `<h2>Turma</h2>`;
-
-snap.forEach(d=>{
-html += `<div class="item">${d.data().nome}</div>`;
-});
-
-box.innerHTML = html;
-};
-
-// ================= ADICIONAR ALUNO =================
-window.addAluno = function(turma){
-
-box.innerHTML = `
-<h2>Adicionar Aluno</h2>
-<p>${turma}</p>
-
-<input id="nome" placeholder="Nome">
-<input id="motivo" placeholder="Motivo">
-
-<button onclick="salvarAluno('${turma}')">Salvar</button>
-`;
-};
-
-window.salvarAluno = async function(turma){
-
-const nome = document.getElementById("nome").value;
-const motivo = document.getElementById("motivo").value;
-
-const id = Math.random().toString(36).substr(2,6);
-
-await setDoc(doc(db,"alunos",id),{
-nome,
-cargo: turma,
-motivo,
-pedidos:[]
-});
-
-alert("Aluno criado!");
-};
-
-// ================= CHAMADA =================
-let chamadaTemp = {};
-
-window.chamada = async function(turma){
-
-chamadaTemp = {};
-
-const q = query(collection(db,"alunos"),where("cargo","==",turma));
-const snap = await getDocs(q);
-
-let html = `<h2>Chamada</h2>`;
-
-snap.forEach(d=>{
-const id = d.id;
-const data = d.data();
-
-html += `
-<div class="item">
-${data.nome}<br>
-
-<button onclick="setStatus('${id}','presenca')">P</button>
-<button onclick="setStatus('${id}','falta_inj')">FI</button>
-<button onclick="setStatus('${id}','falta_jus')">FJ</button>
-</div>
-`;
-});
-
-html += `<br><button onclick="salvarChamada('${turma}')">Salvar Chamada</button>`;
-
-box.innerHTML = html;
-};
-
-window.setStatus = function(id,status){
-
-if(status === "falta_jus"){
-const just = prompt("Justifique a falta:");
-if(!just) return;
-
-chamadaTemp[id] = {status,justificativa:just};
-return;
-}
-
-chamadaTemp[id] = {status};
-};
-
-window.salvarChamada = async function(turma){
-
-const ref = doc(db,"chamadas",turma+"-"+new Date().toISOString().split('T')[0]);
-
-await setDoc(ref,chamadaTemp,{merge:true});
-
-alert("Chamada salva!");
-};
-
-// ================= ATIVIDADES =================
-window.atividades = function(turma){
-
-box.innerHTML = `
-<h2>Criar Atividade</h2>
-
-<input id="titulo" placeholder="Título">
-<input id="inicio" type="date">
-<input id="fim" type="date">
-
-<button onclick="salvarAtividade('${turma}')">Criar</button>
-`;
-};
-
-window.salvarAtividade = async function(turma){
-
-const titulo = document.getElementById("titulo").value;
-const inicio = document.getElementById("inicio").value;
-const fim = document.getElementById("fim").value;
-
-const ref = doc(db,"atividades",turma);
-const snap = await getDoc(ref);
-
-let lista = snap.exists() ? snap.data().atividades || [] : [];
-
-lista.push({
-nome: titulo,
-envio: inicio,
-entrega: fim,
-entregas:{}
-});
-
-await setDoc(ref,{atividades:lista});
-
-alert("Atividade criada!");
-};
-
-// ================= VER ATIVIDADES =================
-window.verAtividades = async function(turma){
-
-const ref = doc(db,"atividades",turma);
-const snap = await getDoc(ref);
-
-if(!snap.exists()){
-box.innerHTML = "Nenhuma atividade";
-return;
-}
-
-const at = snap.data().atividades || [];
-
-let html = `<h2>Atividades</h2>`;
-
-at.forEach((a,i)=>{
-
-const total = a.entregas ? Object.keys(a.entregas).length : 0;
-
-html += `
-<div class="item">
-<b>${a.nome}</b><br>
-📅 ${a.envio}<br>
-⏰ ${a.entrega}<br>
-📦 Entregas: ${total}
-
-<br><br>
-
-<button onclick="verEntregas('${turma}',${i})">Entregas</button>
-<button onclick="editarAtividade('${turma}',${i})">Editar</button>
-<button onclick="encerrar('${turma}',${i})">Encerrar</button>
-</div>
-`;
-});
-
-box.innerHTML = html;
-};
-
-// ================= ENTREGAS =================
-window.verEntregas = async function(turma,i){
-
-const ref = doc(db,"atividades",turma);
-const snap = await getDoc(ref);
-
-const at = snap.data().atividades[i];
-
-let html = `<h2>Entregas</h2>`;
-
-const entregas = at.entregas || {};
-
-if(Object.keys(entregas).length === 0){
-box.innerHTML = "Nenhuma entrega";
-return;
-}
-
-Object.keys(entregas).forEach(id=>{
-html += `
-<div class="item">
-<b>${entregas[id].nome}</b><br>
-📅 ${entregas[id].data}
-</div>
-`;
-});
-
-box.innerHTML = html;
-};
-
-// ================= EDITAR =================
-window.editarAtividade = async function(turma,i){
-
-const ref = doc(db,"atividades",turma);
-const snap = await getDoc(ref);
-
-const a = snap.data().atividades[i];
-
-box.innerHTML = `
-<h2>Editar</h2>
-
-<input id="titulo" value="${a.nome}">
-<input id="inicio" type="date" value="${a.envio}">
-<input id="fim" type="date" value="${a.entrega}">
-
-<button onclick="salvarEdicao('${turma}',${i})">Salvar</button>
-`;
-};
-
-window.salvarEdicao = async function(turma,i){
-
-const ref = doc(db,"atividades",turma);
-const snap = await getDoc(ref);
-
-let at = snap.data().atividades;
-
-at[i].nome = document.getElementById("titulo").value;
-at[i].envio = document.getElementById("inicio").value;
-at[i].entrega = document.getElementById("fim").value;
-
-await setDoc(ref,{atividades:at});
-
-alert("Atualizado!");
-};
-
-// ================= ENCERRAR =================
-window.encerrar = async function(turma,i){
-
-const ref = doc(db,"atividades",turma);
-const snap = await getDoc(ref);
-
-let at = snap.data().atividades;
-
-at[i].encerrada = true;
-
-await setDoc(ref,{atividades:at});
-
-alert("Encerrada!");
-};
-
-</script>
