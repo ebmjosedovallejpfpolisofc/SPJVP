@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal Admin - Upgrade</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#0f172a,#1e293b);color:white;padding:20px}
+.container{max-width:1400px;margin:auto}
+.card{background:rgba(255,255,255,.08);padding:20px;border-radius:20px;margin-bottom:20px}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid rgba(255,255,255,.2);padding:10px;text-align:center}
+button{padding:10px 12px;border:none;border-radius:10px;background:#38bdf8;color:white;cursor:pointer}
+.item{background:rgba(255,255,255,.06);padding:10px;margin:8px 0;border-radius:10px}
+input{width:100%;padding:10px;margin:5px 0;border-radius:8px;border:none;background:#334155;color:white}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="card"><h1>Portal Admin - Upgrade</h1></div>
+<div class="card">
+<table>
+<thead><tr>
+<th>Turma</th><th>Avaliar</th><th>Pedidos</th><th>Atividades</th><th>Ver</th><th>Chamada</th><th>Turma</th><th>Aluno</th>
+</tr></thead>
+<tbody id="tabela"></tbody>
+</table>
+</div>
+<div class="card" id="conteudo">Selecione uma opção</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey:"AIzaSyAyXEqSP0WG5CPw7ZrMQ6v5WUb_OPi_UoI",
+authDomain:"spjvp-49fde.firebaseapp.com",
+projectId:"spjvp-49fde",
+storageBucket:"spjvp-49fde.firebasestorage.app",
+messagingSenderId:"790148342609",
+appId:"1:790148342609:web:18a3a59a4d52ba50572970"
+};
+
+initializeApp(firebaseConfig);
+getFirestore();
+
+const tabela = document.getElementById("tabela");
+const numerosTurma = [41,50,51,52];
+const grupos = ["A","B","C"];
+
+numerosTurma.forEach(num=>{
+  grupos.forEach(g=>{
+    const turno = num === 52 ? "Matutino" : "Vespertino";
+    const turma = `Marcenaria ${turno} t${num} G: ${g}`;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${turma}</td>
+      <td><button>Avaliar</button></td>
+      <td><button>Pedidos</button></td>
+      <td><button>Atividades</button></td>
+      <td><button>Ver</button></td>
+      <td><button>Chamada</button></td>
+      <td><button>Turma</button></td>
+      <td><button>Aluno</button></td>`;
+    tabela.appendChild(tr);
+  });
+});
+</script>
+</body>
+</html>
