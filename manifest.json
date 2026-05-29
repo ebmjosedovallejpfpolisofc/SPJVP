@@ -1,15 +1,14 @@
 {
-  "name": "SPJVP Scanner",
-  "short_name": "SPJVP",
-  "description": "Sistema de identificação escolar",
+  "name": "SGJVP - Sistema De Gestão José Do Valle Pereira",
+  "short_name": "SGJVP",
+  "description": "Sistema de Gestão José Do Valle Pereira",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0f172a",
   "theme_color": "#38bdf8",
-  "orientation": "portrait",
-  "scope": "./",
   "lang": "pt-BR",
-
   "icons": [
     {
       "src": "icon-192.png",
