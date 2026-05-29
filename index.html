@@ -1,386 +1,1265 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>SPJVP Scanner</title>
 
-<script src="https://unpkg.com/html5-qrcode"></script>
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width,
+initial-scale=1.0">
+
+<title>
+SGJVP Scanner
+</title>
+
+<link
+rel="manifest"
+href="manifest.json">
+
+<meta
+name="theme-color"
+content="#38bdf8">
+
+<script src="
+https://unpkg.com/html5-qrcode
+"></script>
+
+<script src="
+https://cdn.jsdelivr.net/npm/face-api.js
+"></script>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
 
-body{
-  background:linear-gradient(135deg,#0f172a,#1e293b);
-  font-family:Arial,sans-serif;
-  min-height:100vh;
-  color:white;
-  padding:20px;
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
 }
 
-.container{max-width:450px;margin:auto}
+body{
 
-.title{text-align:center;margin-bottom:20px}
-.title h1{font-size:28px}
-.title p{opacity:.8}
+background:
+linear-gradient(
+135deg,
+#0f172a,
+#1e293b
+);
 
-#reader{
-  border:3px solid #38bdf8;
-  border-radius:20px;
-  overflow:hidden;
-  box-shadow:0 0 30px rgba(56,189,248,.4);
-  margin-bottom:15px;
+min-height:100vh;
+color:white;
+padding:20px;
+
+}
+
+.container{
+max-width:500px;
+margin:auto;
+}
+
+.card{
+
+background:
+rgba(255,255,255,.08);
+
+backdrop-filter:
+blur(10px);
+
+padding:25px;
+border-radius:25px;
+
+margin-bottom:20px;
+}
+
+.title{
+text-align:center;
+margin-bottom:20px;
+}
+
+.title h1{
+font-size:30px;
+}
+
+.title p{
+opacity:.8;
+margin-top:5px;
 }
 
 .btn{
-  width:100%;
-  border:none;
-  padding:14px;
-  border-radius:15px;
-  background:#38bdf8;
-  color:white;
-  font-size:16px;
-  cursor:pointer;
-  margin-bottom:15px;
+width:100%;
+border:none;
+padding:15px;
+border-radius:18px;
+background:#38bdf8;
+color:white;
+font-size:16px;
+cursor:pointer;
+margin-top:12px;
+transition:.2s;
+}
+
+.btn:hover{
+transform:scale(1.02);
+}
+
+.btn-red{
+background:#ef4444;
+}
+
+#reader{
+border-radius:25px;
+overflow:hidden;
+display:none;
 }
 
 .status{
-  text-align:center;
-  font-weight:bold;
-  margin-bottom:20px;
-  font-size:18px;
+text-align:center;
+font-weight:bold;
+margin-top:10px;
 }
 
-.ok{color:#4ade80}
-.erro{color:#f87171}
-
-.card{
-  display:none;
-  background:rgba(255,255,255,.08);
-  border-radius:25px;
-  padding:20px;
+.ok{
+color:#4ade80;
 }
 
-.card img{
-  width:140px;
-  height:140px;
-  border-radius:20px;
-  object-fit:cover;
-  display:block;
-  margin:auto;
-  border:4px solid #38bdf8;
-}
-
-.item{
-  background:rgba(255,255,255,.06);
-  padding:15px;
-  border-radius:15px;
-  margin-top:10px;
+.erro{
+color:#ef4444;
 }
 
 .popup{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,.7);
-  display:none;
-  justify-content:center;
-  align-items:center;
-  z-index:9999;
+
+position:fixed;
+top:0;
+left:0;
+
+width:100%;
+height:100%;
+
+background:
+rgba(0,0,0,.85);
+
+display:none;
+
+justify-content:center;
+align-items:center;
+
+z-index:9999;
 }
 
 .popup-box{
-  width:350px;
-  background:#1e293b;
-  border-radius:25px;
-  padding:25px;
+
+width:380px;
+max-width:95%;
+
+background:#1e293b;
+
+padding:25px;
+border-radius:25px;
+
 }
 
-.popup-box input,
-.popup-box select{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:15px;
-  margin-bottom:12px;
-  background:#334155;
-  color:white;
+.popup-box h2{
+margin-bottom:15px;
+text-align:center;
 }
+
+input,
+select{
+
+width:100%;
+padding:15px;
+
+border:none;
+border-radius:15px;
+
+margin-top:10px;
+
+background:#334155;
+color:white;
+
+}
+
+.monitor{
+
+display:flex;
+align-items:center;
+gap:10px;
+
+background:
+rgba(255,255,255,.06);
+
+padding:12px;
+border-radius:15px;
+margin-top:10px;
+}
+
+.monitor img{
+width:60px;
+height:60px;
+border-radius:50%;
+object-fit:cover;
+}
+
+.hidden{
+display:none;
+}
+
 </style>
 </head>
 <body>
 
 <div class="container">
 
+<div class="card">
+
 <div class="title">
-<h1>SPJVP Scanner</h1>
-<p>Escaneie o QR ou código do crachá</p>
+
+<h1>
+SGJVP
+</h1>
+
+<p>
+Sistema de Gestão
+José do Valle Pereira
+</p>
+
 </div>
 
-<button class="btn" onclick="abrirLogin()">
+<div id="blockSite">
+
+<p
+style="
+text-align:center;
+margin-bottom:15px;
+">
+
+Instale o aplicativo
+para continuar.
+
+</p>
+
+<button
+class="btn"
+onclick="instalarApp()">
+
+📲 INSTALAR APP
+
+</button>
+
+</div>
+
+<div
+id="appContent"
+class="hidden">
+
+<button
+class="btn"
+onclick="abrirLogin()">
+
 👤 Fazer Login
+
 </button>
 
-<div id="reader"></div>
+<button
+class="btn"
+onclick="verEquipe()">
 
-<button class="btn" onclick="trocarCamera()">
+👨‍🏫 Ver Monitores
+e Professora
+
+</button>
+
+<div
+id="reader">
+
+</div>
+
+<button
+class="btn"
+onclick="trocarCamera()">
+
 🔄 Trocar Câmera
+
 </button>
 
-<div id="status" class="status">
+<div
+id="status"
+class="status">
+
 Aguardando leitura...
+
 </div>
 
-<div class="card" id="card">
-<img id="foto" src="">
-<div class="item"><b>Nome:</b> <span id="nome">---</span></div>
-<div class="item"><b>Motivo:</b> <span id="motivo">---</span></div>
-<div class="item"><b>ID:</b> <span id="id">---</span></div>
-<div class="item"><b>Tipo:</b> <span id="tipo">---</span></div>
 </div>
 
 </div>
 
-<div id="popupLogin" class="popup">
+</div>
+
+<div
+id="popupLogin"
+class="popup">
+
 <div class="popup-box">
 
-<h2>Fazer Login</h2>
+<h2>
+Fazer Login
+</h2>
 
-<input type="text" id="loginId" placeholder="Digite seu ID">
+<input
+type="text"
+id="loginId"
+placeholder="Digite seu ID">
 
-<select id="loginCargo">
-<option value="">Selecione o cargo</option>
+<select
+id="loginCargo">
 
-<option>Marcenaria: matutino t52 G: A</option>
-<option>Marcenaria: matutino t52 G: B</option>
-<option>Marcenaria: matutino t52 G: C</option>
+<option value="">
+Selecione
+o cargo
+</option>
 
-<option>Marcenaria: vespertino t41 G: A</option>
-<option>Marcenaria: vespertino t41 G: B</option>
-<option>Marcenaria: vespertino t41 G: C</option>
-  
-<option>Marcenaria: vespertino t51 G: A</option>
-<option>Marcenaria: vespertino t51 G: B</option>
-<option>Marcenaria: vespertino t51 G: C</option>
+<option>
+Marcenaria:
+vespertino
+t41 G: A
+</option>
 
-<option>Marcenaria: Vespertino t50 G: A</option>
-<option>Marcenaria: Vespertino t50 G: B</option>
-<option>Marcenaria: Vespertino t50 G: C</option>
+<option>
+Marcenaria:
+vespertino
+t41 G: B
+</option>
 
-<option>Marcenaria: Vespertino Monitoria</option>
-<option>Marcenaria: Professor(a)</option>
+<option>
+Marcenaria:
+vespertino
+t41 G: C
+</option>
+
+<option>
+Marcenaria:
+vespertino
+t50 G: A
+</option>
+
+<option>
+Marcenaria:
+vespertino
+t50 G: B
+</option>
+
+<option>
+Marcenaria:
+vespertino
+t50 G: C
+</option>
+
+<option>
+Marcenaria:
+vespertino
+t51 G: A
+</option>
+
+<option>
+Marcenaria:
+vespertino
+t51 G: B
+</option>
+
+<option>
+Marcenaria:
+vespertino
+t51 G: C
+</option>
+
+<option>
+Marcenaria:
+matutino
+t52 G: A
+</option>
+
+<option>
+Marcenaria:
+matutino
+t52 G: B
+</option>
+
+<option>
+Marcenaria:
+matutino
+t52 G: C
+</option>
+
+<option>
+Marcenaria:
+Vespertino
+Monitoria
+</option>
+
+<option>
+Marcenaria:
+Professor(a)
+</option>
 
 </select>
 
-<button class="btn" onclick="fazerLogin()">
+<button
+class="btn"
+onclick="fazerLogin()">
+
 Entrar
+
 </button>
 
-<button class="btn" style="background:red"
+<button
+class="btn btn-red"
 onclick="fecharLogin()">
+
 Fechar
+
 </button>
 
 </div>
+
+</div>
+
+<div
+id="popupEquipe"
+class="popup">
+
+<div class="popup-box">
+
+<h2>
+Monitores e Professora
+</h2>
+
+<div id="listaEquipe">
+
+<div class="monitor">
+
+<img src="
+https://via.placeholder.com/80
+">
+
+<div>
+
+<b>
+Profª Salete Santos
+</b>
+
+<br>
+
+Professora
+
+</div>
+
+</div>
+
+<div class="monitor">
+
+<img src="
+https://via.placeholder.com/80
+">
+
+<div>
+
+<b>
+Monitor 1
+</b>
+
+<br>
+
+Monitoria
+
+</div>
+
+</div>
+
+<div class="monitor">
+
+<img src="
+https://via.placeholder.com/80
+">
+
+<div>
+
+<b>
+Monitor 2
+</b>
+
+<br>
+
+Monitoria
+
+</div>
+
+</div>
+
+</div>
+
+<button
+class="btn btn-red"
+onclick="fecharEquipe()">
+
+Fechar
+
+</button>
+
+</div>
+
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
+initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+
 getFirestore,
 doc,
-getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+getDoc,
+collection,
+getDocs
+
+}
+
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-apiKey: "AIzaSyAyXEqSP0WG5CPw7ZrMQ6v5WUb_OPi_UoI",
-authDomain: "spjvp-49fde.firebaseapp.com",
-projectId: "spjvp-49fde",
-storageBucket: "spjvp-49fde.firebasestorage.app",
-messagingSenderId: "790148342609",
-appId: "1:790148342609:web:18a3a59a4d52ba50572970"
+
+apiKey:
+"SUA_API_KEY",
+
+authDomain:
+"SEU_DOMINIO",
+
+projectId:
+"SEU_PROJECT_ID",
+
+storageBucket:
+"SEU_BUCKET",
+
+messagingSenderId:
+"SEU_SENDER_ID",
+
+appId:
+"SEU_APP_ID"
+
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const app =
+initializeApp(
+firebaseConfig
+);
 
-const status = document.getElementById("status");
-const card = document.getElementById("card");
+const db =
+getFirestore(
+app
+);
 
-let scanner = new Html5Qrcode("reader");
+let deferredPrompt =
+null;
+
+window.addEventListener(
+"beforeinstallprompt",
+(e)=>{
+
+e.preventDefault();
+
+deferredPrompt =
+e;
+
+}
+);
+
+window.instalarApp =
+async function(){
+
+if(
+deferredPrompt
+){
+
+deferredPrompt.prompt();
+
+const result =
+await deferredPrompt.userChoice;
+
+if(
+result.outcome
+===
+"accepted"
+){
+
+alert(
+"Aplicativo instalado!"
+);
+
+}
+
+}
+
+}
+
+const isStandalone =
+
+window.matchMedia(
+"(display-mode: standalone)"
+).matches
+
+||
+
+window.navigator.standalone
+
+||
+
+document.referrer.includes(
+"android-app://"
+);
+
+if(
+isStandalone
+){
+
+document
+.getElementById(
+"blockSite"
+)
+.style.display =
+"none";
+
+document
+.getElementById(
+"appContent"
+)
+.classList
+.remove(
+"hidden"
+);
+
+document
+.getElementById(
+"reader"
+)
+.style.display =
+"block";
+
+}
+else{
+
+document
+.getElementById(
+"appContent"
+)
+.style.display =
+"none";
+
+}
+
+window.abrirLogin =
+function(){
+
+document
+.getElementById(
+"popupLogin"
+)
+.style.display =
+"flex";
+
+}
+
+window.fecharLogin =
+function(){
+
+document
+.getElementById(
+"popupLogin"
+)
+.style.display =
+"none";
+
+}
+
+window.verEquipe =
+function(){
+
+document
+.getElementById(
+"popupEquipe"
+)
+.style.display =
+"flex";
+
+}
+
+window.fecharEquipe =
+function(){
+
+document
+.getElementById(
+"popupEquipe"
+)
+.style.display =
+"none";
+
+}
+
+let scanner =
+null;
+
 let cameras = [];
-let currentCamera = 0;
-let lendo = false;
 
-async function procurarPessoa(codigo){
+let currentCamera =
+0;
 
-if(lendo) return;
-lendo = true;
+async function iniciarScanner(){
 
-try{
+scanner =
+new Html5Qrcode(
+"reader"
+);
 
-let ref = doc(db,"alunos",codigo);
-let snap = await getDoc(ref);
+cameras =
+await Html5Qrcode
+.getCameras();
 
-if(snap.exists()){
-mostrarPessoa(snap.data(),codigo,"Aluno");
-return;
+if(
+cameras.length
+){
+
+iniciarCamera(
+cameras[0].id
+);
+
 }
 
-ref = doc(db,"professores",codigo);
-snap = await getDoc(ref);
-
-if(snap.exists()){
-mostrarPessoa(snap.data(),codigo,"Professor");
-return;
 }
 
-naoConfirmado();
+window.trocarCamera =
+async function(){
 
-}catch(err){
-console.error(err);
-naoConfirmado();
-}
-
-setTimeout(()=>{ lendo = false },2000);
-}
-
-function mostrarPessoa(data,id,tipo){
-status.innerHTML = "✅ Confirmado";
-status.className = "status ok";
-
-card.style.display = "block";
-
-document.getElementById("foto").src = data.foto || "";
-document.getElementById("nome").innerText = data.nome;
-document.getElementById("motivo").innerText = data.motivo;
-document.getElementById("id").innerText = id;
-document.getElementById("tipo").innerText = tipo;
-}
-
-function naoConfirmado(){
-status.innerHTML = "❌ Não confirmado";
-status.className = "status erro";
-card.style.display = "none";
-}
-
-window.trocarCamera = async function(){
-if(cameras.length <= 1) return;
+if(
+cameras.length
+<= 1
+)return;
 
 currentCamera =
-(currentCamera + 1) % cameras.length;
+
+(
+currentCamera
++ 1
+)
+
+%
+cameras.length;
 
 await scanner.stop();
-iniciarCamera(cameras[currentCamera].id);
-}
 
-async function iniciarCamera(id){
-await scanner.start(
-id,
-{
-fps:10,
-qrbox:{width:250,height:250}
-},
-(decodedText)=>{
-procurarPessoa(decodedText.trim());
-}
+iniciarCamera(
+cameras[
+currentCamera
+].id
 );
+
 }
 
-Html5Qrcode.getCameras()
-.then(lista=>{
-cameras = lista;
-if(cameras.length){
-iniciarCamera(cameras[0].id);
+async function iniciarCamera(
+cameraId
+){
+
+await scanner.start(
+
+cameraId,
+
+{
+
+fps:10,
+
+qrbox:{
+
+width:250,
+height:250
+
 }
+
+},
+
+async (
+decodedText
+)=>{
+
+procurarPessoa(
+decodedText.trim()
+);
+
+},
+
+()=>{}
+
+);
+
+}
+
+async function procurarPessoa(
+codigo
+){
+
+try{
+
+let ref =
+doc(
+db,
+"alunos",
+codigo
+);
+
+let snap =
+await getDoc(
+ref
+);
+
+if(
+snap.exists()
+){
+
+loginAutomatico(
+snap.data(),
+codigo,
+"aluno"
+);
+
+return;
+
+}
+
+ref =
+doc(
+db,
+"professores",
+codigo
+);
+
+snap =
+await getDoc(
+ref
+);
+
+if(
+snap.exists()
+){
+
+loginAutomatico(
+snap.data(),
+codigo,
+"admin"
+);
+
+return;
+
+}
+
+document
+.getElementById(
+"status"
+)
+.innerHTML =
+
+"❌ Não encontrado";
+
+document
+.getElementById(
+"status"
+)
+.className =
+
+"status erro";
+
+}catch(err){
+
+console.error(err);
+
+}
+
+}
+
+async function carregarFaceAPI(){
+
+await Promise.all([
+
+faceapi
+.nets
+.tinyFaceDetector
+.loadFromUri(
+"./models"
+),
+
+faceapi
+.nets
+.faceRecognitionNet
+.loadFromUri(
+"./models"
+),
+
+faceapi
+.nets
+.faceLandmark68Net
+.loadFromUri(
+"./models"
+)
+
+]);
+
+console.log(
+"Face API carregada"
+);
+
+}
+
+async function verificarFace(){
+
+const video =
+document
+.querySelector(
+"video"
+);
+
+if(!video)
+return;
+
+const face =
+await faceapi
+.detectSingleFace(
+video,
+new faceapi
+.TinyFaceDetectorOptions()
+)
+.withFaceLandmarks()
+.withFaceDescriptor();
+
+if(!face){
+return;
+}
+
+const profSnap =
+await getDocs(
+collection(
+db,
+"professores"
+)
+);
+
+profSnap.forEach(
+docx=>{
+
+const d =
+docx.data();
+
+if(
+
+d.cargo
+?.toLowerCase()
+.includes(
+"monitor"
+)
+
+||
+
+d.cargo
+?.toLowerCase()
+.includes(
+"professor"
+)
+
+){
+
+console.log(
+"Reconhecimento facial ativo para:",
+d.nome
+);
+
+}
+
 });
 
-window.abrirLogin = function(){
-document.getElementById("popupLogin")
-.style.display = "flex";
 }
 
-window.fecharLogin = function(){
-document.getElementById("popupLogin")
-.style.display = "none";
-}
+setInterval(
 
-window.fazerLogin = async function(){
+verificarFace,
+
+5000
+
+);
+
+iniciarScanner();
+carregarFaceAPI();
+
+window.fazerLogin =
+async function(){
 
 const id =
-document.getElementById("loginId")
-.value.trim();
+
+document
+.getElementById(
+"loginId"
+)
+.value
+.trim();
 
 const cargo =
-document.getElementById("loginCargo")
+
+document
+.getElementById(
+"loginCargo"
+)
 .value;
 
-if(!id || !cargo){
-alert("Preencha tudo");
+if(
+!id
+||
+!cargo
+){
+
+alert(
+"Preencha tudo."
+);
+
 return;
+
 }
 
 try{
 
-let ref = doc(db,"alunos",id);
-let snap = await getDoc(ref);
-
-if(!snap.exists()){
-ref = doc(db,"professores",id);
-snap = await getDoc(ref);
-}
-
-if(!snap.exists()){
-alert("ID não encontrado");
-return;
-}
-
-const data = snap.data();
-
-if(data.cargo !== cargo){
-alert("Cargo incorreto");
-return;
-}
-
-const cargoLower =
-cargo.toLowerCase();
-
-const ehAdmin =
-cargoLower.includes("monitor")
-||
-cargoLower.includes("professor");
-
-const tipo =
-ehAdmin
-? "admin"
-: "aluno";
-
-localStorage.setItem(
-"usuario",
-JSON.stringify({
-id,
-nome:data.nome,
-cargo:data.cargo,
-tipo
-})
+let ref =
+doc(
+db,
+"alunos",
+id
 );
 
-if(tipo === "admin"){
-location.href =
-"portal-monitor-prof.html";
-}else{
-location.href =
-"portal-aluno.html";
+let snap =
+await getDoc(
+ref
+);
+
+if(
+snap.exists()
+){
+
+const data =
+snap.data();
+
+if(
+data.cargo
+!== cargo
+){
+
+alert(
+"Cargo incorreto"
+);
+
+return;
+
 }
 
+salvarUsuario(
+data,
+id,
+"aluno"
+);
+
+location.href =
+"portal-aluno.html";
+
+return;
+
+}
+
+ref =
+doc(
+db,
+"professores",
+id
+);
+
+snap =
+await getDoc(
+ref
+);
+
+if(
+snap.exists()
+){
+
+const data =
+snap.data();
+
+if(
+data.cargo
+!== cargo
+){
+
+alert(
+"Cargo incorreto"
+);
+
+return;
+
+}
+
+const ehAdmin =
+
+cargo
+.toLowerCase()
+.includes(
+"monitor"
+)
+
+||
+
+cargo
+.toLowerCase()
+.includes(
+"professor"
+);
+
+if(
+!ehAdmin
+){
+
+alert(
+"Cargo inválido"
+);
+
+return;
+
+}
+
+salvarUsuario(
+data,
+id,
+"admin"
+);
+
+location.href =
+
+"portal-monitor-prof.html";
+
+return;
+
+}
+
+alert(
+"ID não encontrado"
+);
+
 }catch(err){
-console.error(err);
-alert("Erro no login");
+
+console.error(
+err
+);
+
+alert(
+"Erro no login"
+);
+
 }
+
 }
+
+function salvarUsuario(
+data,
+id,
+tipo
+){
+
+localStorage
+.setItem(
+
+"usuario",
+
+JSON.stringify({
+
+id,
+
+nome:
+data.nome,
+
+cargo:
+data.cargo,
+
+foto:
+data.foto
+||
+"",
+
+tipo
+
+})
+
+);
+
+}
+
+function loginAutomatico(
+data,
+id,
+tipo
+){
+
+salvarUsuario(
+data,
+id,
+tipo
+);
+
+document
+.getElementById(
+"status"
+)
+.innerHTML =
+
+"✅ Confirmado";
+
+document
+.getElementById(
+"status"
+)
+.className =
+
+"status ok";
+
+setTimeout(()=>{
+
+if(
+tipo
+===
+"admin"
+){
+
+location.href =
+
+"portal-monitor-prof.html";
+
+}
+else{
+
+location.href =
+
+"portal-aluno.html";
+
+}
+
+},1000);
+
+}
+
 </script>
 
 </body>
