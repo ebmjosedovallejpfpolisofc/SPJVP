@@ -6,8 +6,7 @@
 
 <meta
 name="viewport"
-content="width=device-width,
-initial-scale=1.0">
+content="width=device-width, initial-scale=1.0">
 
 <title>
 SGJVP Scanner
@@ -39,18 +38,15 @@ font-family:Arial,sans-serif;
 }
 
 body{
-
 background:
 linear-gradient(
 135deg,
 #0f172a,
 #1e293b
 );
-
 min-height:100vh;
 color:white;
 padding:20px;
-
 }
 
 .container{
@@ -59,16 +55,12 @@ margin:auto;
 }
 
 .card{
-
 background:
 rgba(255,255,255,.08);
-
 backdrop-filter:
 blur(10px);
-
 padding:25px;
 border-radius:25px;
-
 margin-bottom:20px;
 }
 
@@ -128,35 +120,25 @@ color:#ef4444;
 }
 
 .popup{
-
 position:fixed;
 top:0;
 left:0;
-
 width:100%;
 height:100%;
-
 background:
 rgba(0,0,0,.85);
-
 display:none;
-
 justify-content:center;
 align-items:center;
-
 z-index:9999;
 }
 
 .popup-box{
-
 width:380px;
 max-width:95%;
-
 background:#1e293b;
-
 padding:25px;
 border-radius:25px;
-
 }
 
 .popup-box h2{
@@ -166,29 +148,21 @@ text-align:center;
 
 input,
 select{
-
 width:100%;
 padding:15px;
-
 border:none;
 border-radius:15px;
-
 margin-top:10px;
-
 background:#334155;
 color:white;
-
 }
 
 .monitor{
-
 display:flex;
 align-items:center;
 gap:10px;
-
 background:
 rgba(255,255,255,.06);
-
 padding:12px;
 border-radius:15px;
 margin-top:10px;
@@ -477,26 +451,6 @@ Monitoria
 
 </div>
 
-<div class="monitor">
-
-<img src="
-https://via.placeholder.com/80
-">
-
-<div>
-
-<b>
-Monitor 2
-</b>
-
-<br>
-
-Monitoria
-
-</div>
-
-</div>
-
 </div>
 
 <button
@@ -587,21 +541,6 @@ deferredPrompt
 ){
 
 deferredPrompt.prompt();
-
-const result =
-await deferredPrompt.userChoice;
-
-if(
-result.outcome
-===
-"accepted"
-){
-
-alert(
-"Aplicativo instalado!"
-);
-
-}
 
 }
 
@@ -888,118 +827,6 @@ console.error(err);
 
 }
 
-async function carregarFaceAPI(){
-
-await Promise.all([
-
-faceapi
-.nets
-.tinyFaceDetector
-.loadFromUri(
-"./models"
-),
-
-faceapi
-.nets
-.faceRecognitionNet
-.loadFromUri(
-"./models"
-),
-
-faceapi
-.nets
-.faceLandmark68Net
-.loadFromUri(
-"./models"
-)
-
-]);
-
-console.log(
-"Face API carregada"
-);
-
-}
-
-async function verificarFace(){
-
-const video =
-document
-.querySelector(
-"video"
-);
-
-if(!video)
-return;
-
-const face =
-await faceapi
-.detectSingleFace(
-video,
-new faceapi
-.TinyFaceDetectorOptions()
-)
-.withFaceLandmarks()
-.withFaceDescriptor();
-
-if(!face){
-return;
-}
-
-const profSnap =
-await getDocs(
-collection(
-db,
-"professores"
-)
-);
-
-profSnap.forEach(
-docx=>{
-
-const d =
-docx.data();
-
-if(
-
-d.cargo
-?.toLowerCase()
-.includes(
-"monitor"
-)
-
-||
-
-d.cargo
-?.toLowerCase()
-.includes(
-"professor"
-)
-
-){
-
-console.log(
-"Reconhecimento facial ativo para:",
-d.nome
-);
-
-}
-
-});
-
-}
-
-setInterval(
-
-verificarFace,
-
-5000
-
-);
-
-iniciarScanner();
-carregarFaceAPI();
-
 window.fazerLogin =
 async function(){
 
@@ -1113,34 +940,6 @@ return;
 
 }
 
-const ehAdmin =
-
-cargo
-.toLowerCase()
-.includes(
-"monitor"
-)
-
-||
-
-cargo
-.toLowerCase()
-.includes(
-"professor"
-);
-
-if(
-!ehAdmin
-){
-
-alert(
-"Cargo inválido"
-);
-
-return;
-
-}
-
 salvarUsuario(
 data,
 id,
@@ -1148,7 +947,6 @@ id,
 );
 
 location.href =
-
 "portal-monitor-prof.html";
 
 return;
@@ -1260,10 +1058,6 @@ location.href =
 
 }
 
-</script>
-
-<script>
-
 if(
 "serviceWorker"
 in navigator
@@ -1277,21 +1071,15 @@ navigator
 .serviceWorker
 .register(
 "./service-worker.js"
-)
-
-.then(()=>{
-
-console.log(
-"Service Worker registrado"
 );
-
-});
 
 });
 
 }
 
+iniciarScanner();
+
 </script>
-  
+
 </body>
 </html>
