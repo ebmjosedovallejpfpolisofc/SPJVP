@@ -16,17 +16,17 @@ SGJVP Scanner
 rel="manifest"
 href="manifest.json">
 
+<link
+rel="icon"
+href="icon-192.png">
+
 <meta
 name="theme-color"
 content="#38bdf8">
 
-<script src="
-https://unpkg.com/html5-qrcode
-"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
 
-<script src="
-https://cdn.jsdelivr.net/npm/face-api.js
-"></script>
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 
 <style>
 
@@ -61,7 +61,6 @@ backdrop-filter:
 blur(10px);
 padding:25px;
 border-radius:25px;
-margin-bottom:20px;
 }
 
 .title{
@@ -103,12 +102,14 @@ background:#ef4444;
 border-radius:25px;
 overflow:hidden;
 display:none;
+margin-top:15px;
 }
 
 .status{
 text-align:center;
 font-weight:bold;
-margin-top:10px;
+margin-top:15px;
+font-size:18px;
 }
 
 .ok{
@@ -202,8 +203,7 @@ José do Valle Pereira
 
 <div id="blockSite">
 
-<p
-style="
+<p style="
 text-align:center;
 margin-bottom:15px;
 ">
@@ -244,10 +244,7 @@ e Professora
 
 </button>
 
-<div
-id="reader">
-
-</div>
+<div id="reader"></div>
 
 <button
 class="btn"
@@ -290,8 +287,7 @@ placeholder="Digite seu ID">
 id="loginCargo">
 
 <option value="">
-Selecione
-o cargo
+Selecione o cargo
 </option>
 
 <option>
@@ -368,8 +364,7 @@ t52 G: C
 
 <option>
 Marcenaria:
-Vespertino
-Monitoria
+Vespertino Monitoria
 </option>
 
 <option>
@@ -409,13 +404,9 @@ class="popup">
 Monitores e Professora
 </h2>
 
-<div id="listaEquipe">
-
 <div class="monitor">
 
-<img src="
-https://via.placeholder.com/80
-">
+<img src="icon-192.png">
 
 <div>
 
@@ -433,21 +424,17 @@ Professora
 
 <div class="monitor">
 
-<img src="
-https://via.placeholder.com/80
-">
+<img src="icon-192.png">
 
 <div>
 
 <b>
-Monitor 1
+Monitor
 </b>
 
 <br>
 
 Monitoria
-
-</div>
 
 </div>
 
@@ -489,22 +476,22 @@ from
 const firebaseConfig = {
 
 apiKey:
-"SUA_API_KEY",
+"AizaSyAyXEqSP0WG5CPw7ZrMQ6v5WUb_OPi_UoI",
 
 authDomain:
-"SEU_DOMINIO",
+"spjvp-49fde.firebaseapp.com",
 
 projectId:
-"SEU_PROJECT_ID",
+"spjvp-49fde",
 
 storageBucket:
-"SEU_BUCKET",
+"spjvp-49fde.firebasestorage.app",
 
 messagingSenderId:
-"SEU_SENDER_ID",
+"790148342609",
 
 appId:
-"SEU_APP_ID"
+"1:790148342609:web:18a3a59a4d52ba50572970"
 
 };
 
@@ -542,6 +529,28 @@ deferredPrompt
 
 deferredPrompt.prompt();
 
+const choice =
+await deferredPrompt.userChoice;
+
+if(
+choice.outcome
+===
+"accepted"
+){
+
+console.log(
+"App instalado"
+);
+
+}
+
+}
+else{
+
+alert(
+"Seu navegador não suporta instalação agora."
+);
+
 }
 
 }
@@ -577,8 +586,7 @@ document
 .getElementById(
 "appContent"
 )
-.classList
-.remove(
+.classList.remove(
 "hidden"
 );
 
@@ -588,6 +596,8 @@ document
 )
 .style.display =
 "block";
+
+iniciarScanner();
 
 }
 else{
@@ -652,7 +662,8 @@ document
 let scanner =
 null;
 
-let cameras = [];
+let cameras =
+[];
 
 let currentCamera =
 0;
@@ -821,7 +832,9 @@ document
 
 }catch(err){
 
-console.error(err);
+console.error(
+err
+);
 
 }
 
@@ -977,8 +990,7 @@ id,
 tipo
 ){
 
-localStorage
-.setItem(
+localStorage.setItem(
 
 "usuario",
 
@@ -1042,14 +1054,12 @@ tipo
 ){
 
 location.href =
-
 "portal-monitor-prof.html";
 
 }
 else{
 
 location.href =
-
 "portal-aluno.html";
 
 }
@@ -1071,13 +1081,28 @@ navigator
 .serviceWorker
 .register(
 "./service-worker.js"
+)
+
+.then(()=>{
+
+console.log(
+"Service Worker registrado"
+);
+
+})
+
+.catch(err=>{
+
+console.error(
+"Erro SW:",
+err
 );
 
 });
 
-}
+});
 
-iniciarScanner();
+}
 
 </script>
 
