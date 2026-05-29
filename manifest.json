@@ -1,14 +1,13 @@
 {
   "name": "SGJVP - Sistema De Gestão José Do Valle Pereira",
   "short_name": "SGJVP",
-  "description": "Sistema de Gestão José Do Valle Pereira",
+  "description": "Sistema de Gestão José do Valle Pereira",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#0f172a",
   "theme_color": "#38bdf8",
-  "lang": "pt-BR",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "icon-192.png",
