@@ -7,15 +7,15 @@ const urlsToCache = [
 "./index.html",
 "./portal-aluno.html",
 "./portal-monitor-prof.html",
-"./manifest.json"
+"./manifest.json",
+"./icon-192.png",
+"./icon-512.png"
 
 ];
 
 self.addEventListener(
-
 "install",
-
-(event)=>{
+event=>{
 
 event.waitUntil(
 
@@ -33,45 +33,15 @@ urlsToCache
 
 );
 
-}
-
+console.log(
+"Service Worker instalado"
 );
+
+});
 
 self.addEventListener(
-
-"fetch",
-
-(event)=>{
-
-event.respondWith(
-
-caches.match(
-event.request
-)
-
-.then(response=>{
-
-return (
-response
-||
-fetch(
-event.request
-)
-);
-
-})
-
-);
-
-}
-
-);
-
-self.addEventListener(
-
 "activate",
-
-(event)=>{
+event=>{
 
 event.waitUntil(
 
@@ -102,6 +72,57 @@ key
 
 );
 
+console.log(
+"Service Worker ativado"
+);
+
+});
+
+self.addEventListener(
+"fetch",
+event=>{
+
+if(
+event.request.method
+!== "GET"
+){
+return;
 }
 
+event.respondWith(
+
+caches.match(
+event.request
+)
+
+.then(response=>{
+
+if(
+response
+){
+return response;
+}
+
+return fetch(
+event.request
+)
+
+.then(networkResponse=>{
+
+return networkResponse;
+
+})
+
+.catch(()=>{
+
+return caches.match(
+"./index.html"
 );
+
+});
+
+})
+
+);
+
+});
