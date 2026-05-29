@@ -2,70 +2,1061 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal Admin - Upgrade</title>
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Portal Monitor/Professor - SGJVP
+</title>
+
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#0f172a,#1e293b);color:white;padding:20px}
-.container{max-width:1400px;margin:auto}
-.card{background:rgba(255,255,255,.08);padding:20px;border-radius:20px;margin-bottom:20px}
-table{width:100%;border-collapse:collapse}
-th,td{border:1px solid rgba(255,255,255,.2);padding:10px;text-align:center}
-button{padding:10px 12px;border:none;border-radius:10px;background:#38bdf8;color:white;cursor:pointer}
-.item{background:rgba(255,255,255,.06);padding:10px;margin:8px 0;border-radius:10px}
-input{width:100%;padding:10px;margin:5px 0;border-radius:8px;border:none;background:#334155;color:white}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:
+linear-gradient(
+135deg,
+#0f172a,
+#1e293b
+);
+color:white;
+min-height:100vh;
+padding:20px;
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+}
+
+.header{
+background:
+rgba(255,255,255,.08);
+padding:25px;
+border-radius:25px;
+margin-bottom:20px;
+backdrop-filter:blur(10px);
+}
+
+.header h1{
+font-size:28px;
+}
+
+.header p{
+opacity:.8;
+margin-top:5px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:
+repeat(
+auto-fit,
+minmax(220px,1fr)
+);
+gap:15px;
+margin-bottom:20px;
+}
+
+.card-btn{
+background:
+rgba(255,255,255,.08);
+border:none;
+padding:25px;
+border-radius:25px;
+color:white;
+font-size:18px;
+cursor:pointer;
+transition:.2s;
+backdrop-filter:blur(10px);
+}
+
+.card-btn:hover{
+transform:scale(1.03);
+background:#38bdf8;
+}
+
+.content{
+background:
+rgba(255,255,255,.08);
+padding:25px;
+border-radius:25px;
+min-height:300px;
+backdrop-filter:blur(10px);
+}
+
+.item{
+background:
+rgba(255,255,255,.06);
+padding:15px;
+border-radius:18px;
+margin-bottom:15px;
+}
+
+.btn{
+border:none;
+padding:12px 18px;
+border-radius:15px;
+background:#38bdf8;
+color:white;
+cursor:pointer;
+margin-top:10px;
+font-size:15px;
+}
+
+.btn-red{
+background:#ef4444;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+}
+
+th,td{
+border:
+1px solid
+rgba(255,255,255,.2);
+padding:12px;
+text-align:center;
+}
+
+select,input,textarea{
+width:100%;
+padding:12px;
+border:none;
+border-radius:15px;
+background:#334155;
+color:white;
+margin-top:5px;
+}
+
+.popup{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:
+rgba(0,0,0,.8);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:9999;
+}
+
+.popup-box{
+background:#1e293b;
+padding:25px;
+border-radius:25px;
+width:400px;
+max-height:80vh;
+overflow:auto;
+}
+
+.grupo-btn{
+width:100%;
+margin-top:10px;
+}
 </style>
 </head>
 <body>
+
 <div class="container">
-<div class="card"><h1>Portal Admin - Upgrade</h1></div>
-<div class="card">
-<table>
-<thead><tr>
-<th>Turma</th><th>Avaliar</th><th>Pedidos</th><th>Atividades</th><th>Ver</th><th>Chamada</th><th>Turma</th><th>Aluno</th>
-</tr></thead>
-<tbody id="tabela"></tbody>
-</table>
+
+<div class="header">
+
+<h1 id="saudacao">
+Olá
+</h1>
+
+<p id="cargo">
+Carregando...
+</p>
+
 </div>
-<div class="card" id="conteudo">Selecione uma opção</div>
+
+<div class="grid">
+
+<button
+class="card-btn"
+onclick="abrirPopup('turma')">
+
+👥 Ver Turma
+
+</button>
+
+<button
+class="card-btn"
+onclick="abrirPopup('avaliar')">
+
+📝 Avaliar
+
+</button>
+
+<button
+class="card-btn"
+onclick="abrirPopup('chamada')">
+
+📋 Chamada
+
+</button>
+
+<button
+class="card-btn"
+onclick="abrirPopup('pedidos')">
+
+📦 Pedidos
+
+</button>
+
+<button
+class="card-btn"
+onclick="abrirPopup('atividades')">
+
+📚 Atividades
+
+</button>
+
+<button
+class="card-btn"
+onclick="abrirPopup('visualizar')">
+
+📨 Visualizar
+Atividades Solicitadas
+
+</button>
+
+<button
+class="card-btn"
+onclick="abrirPopup('editar')">
+
+✏ Editar Turma
+
+</button>
+
+</div>
+
+<div
+class="content"
+id="conteudo">
+
+Selecione
+uma opção.
+
+</div>
+
+</div>
+
+<div
+class="popup"
+id="popupGrupo">
+
+<div class="popup-box">
+
+<h2>
+Escolha O Grupo
+Para Completar
+A Ação:
+</h2>
+
+<div id="listaGrupos">
+
+</div>
+
+<button
+class="btn btn-red"
+onclick="fecharPopup()">
+
+Fechar
+
+</button>
+
+</div>
+
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+
+getFirestore,
+collection,
+query,
+where,
+getDocs,
+doc,
+getDoc,
+setDoc,
+addDoc,
+deleteDoc,
+serverTimestamp,
+onSnapshot
+
+}
+
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-apiKey:"AIzaSyAyXEqSP0WG5CPw7ZrMQ6v5WUb_OPi_UoI",
-authDomain:"spjvp-49fde.firebaseapp.com",
-projectId:"spjvp-49fde",
-storageBucket:"spjvp-49fde.firebasestorage.app",
-messagingSenderId:"790148342609",
-appId:"1:790148342609:web:18a3a59a4d52ba50572970"
+
+apiKey:
+"COLE_API_KEY",
+
+authDomain:
+"SEU_DOMINIO",
+
+projectId:
+"SEU_PROJECT_ID",
+
+storageBucket:
+"SEU_BUCKET",
+
+messagingSenderId:
+"SEU_SENDER",
+
+appId:
+"SEU_APPID"
+
 };
 
-initializeApp(firebaseConfig);
-getFirestore();
+const app =
+initializeApp(
+firebaseConfig
+);
 
-const tabela = document.getElementById("tabela");
-const numerosTurma = [41,50,51,52];
-const grupos = ["A","B","C"];
+const db =
+getFirestore(
+app
+);
 
-numerosTurma.forEach(num=>{
-  grupos.forEach(g=>{
-    const turno = num === 52 ? "Matutino" : "Vespertino";
-    const turma = `Marcenaria ${turno} t${num} G: ${g}`;
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${turma}</td>
-      <td><button>Avaliar</button></td>
-      <td><button>Pedidos</button></td>
-      <td><button>Atividades</button></td>
-      <td><button>Ver</button></td>
-      <td><button>Chamada</button></td>
-      <td><button>Turma</button></td>
-      <td><button>Aluno</button></td>`;
-    tabela.appendChild(tr);
-  });
+const usuario =
+JSON.parse(
+localStorage
+.getItem(
+"usuario"
+)
+);
+
+if(
+!usuario
+||
+usuario.tipo
+!== "admin"
+){
+location.href =
+"index.html";
+}
+
+document
+.getElementById(
+"saudacao"
+)
+.innerText =
+
+`Olá,
+${usuario.nome}`;
+
+document
+.getElementById(
+"cargo"
+)
+.innerText =
+usuario.cargo;
+
+const box =
+document
+.getElementById(
+"conteudo"
+);
+
+let acaoAtual =
+"";
+
+const grupos = [
+
+"Marcenaria: vespertino t41 G: A",
+"Marcenaria: vespertino t41 G: B",
+"Marcenaria: vespertino t41 G: C",
+
+"Marcenaria: vespertino t50 G: A",
+"Marcenaria: vespertino t50 G: B",
+"Marcenaria: vespertino t50 G: C",
+
+"Marcenaria: vespertino t51 G: A",
+"Marcenaria: vespertino t51 G: B",
+"Marcenaria: vespertino t51 G: C",
+
+"Marcenaria: matutino t52 G: A",
+"Marcenaria: matutino t52 G: B",
+"Marcenaria: matutino t52 G: C"
+
+];
+
+window.abrirPopup = function(acao){
+
+acaoAtual = acao;
+
+document
+.getElementById(
+"popupGrupo"
+)
+.style.display =
+"flex";
+
+let html = "";
+
+grupos.forEach(
+grupo=>{
+
+html += `
+
+<button
+class="btn grupo-btn"
+onclick="abrirAcao(
+'${grupo}'
+)">
+
+${grupo}
+
+</button>
+
+`;
+
 });
+
+document
+.getElementById(
+"listaGrupos"
+)
+.innerHTML =
+html;
+
+}
+
+window.fecharPopup =
+function(){
+
+document
+.getElementById(
+"popupGrupo"
+)
+.style.display =
+"none";
+
+}
+
+window.abrirAcao =
+async function(
+grupo
+){
+
+fecharPopup();
+
+if(
+acaoAtual
+===
+"turma"
+){
+
+const q =
+query(
+collection(
+db,
+"alunos"
+),
+where(
+"cargo",
+"==",
+grupo
+)
+);
+
+const snap =
+await getDocs(
+q
+);
+
+let html =
+`<h2>
+👥 Ver Turma
+</h2>`;
+
+snap.forEach(
+docx=>{
+
+const d =
+docx.data();
+
+html += `
+
+<div class="item">
+
+<b>
+${d.nome}
+</b>
+
+<br><br>
+
+<button
+class="btn"
+onclick="abrirChatAluno(
+'${docx.id}',
+'${d.nome}'
+)">
+
+💬 Chat
+
+</button>
+
+</div>
+
+`;
+
+});
+
+box.innerHTML =
+html;
+
+}
+
+if(
+acaoAtual
+===
+"avaliar"
+){
+
+const q =
+query(
+collection(
+db,
+"alunos"
+),
+where(
+"cargo",
+"==",
+grupo
+)
+);
+
+const snap =
+await getDocs(
+q
+);
+
+let html = `
+
+<h2>
+📝 Avaliar
+</h2>
+
+<table>
+
+<tr>
+
+<th>
+Nome
+</th>
+
+<th>
+Obediência
+(0/10)
+</th>
+
+<th>
+Participação
+(0/10)
+</th>
+
+</tr>
+
+`;
+
+snap.forEach(
+docx=>{
+
+const d =
+docx.data();
+
+html += `
+
+<tr>
+
+<td>
+${d.nome}
+</td>
+
+<td>
+
+<input
+type="number"
+min="0"
+max="10"
+id="ob_${docx.id}">
+
+</td>
+
+<td>
+
+<input
+type="number"
+min="0"
+max="10"
+id="pa_${docx.id}">
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+html += `
+
+</table>
+
+<button
+class="btn"
+onclick="salvarNotas(
+'${grupo}'
+)">
+
+Salvar
+
+</button>
+
+`;
+
+box.innerHTML =
+html;
+
+}
+
+if(
+acaoAtual
+===
+"chamada"
+){
+
+const q =
+query(
+collection(
+db,
+"alunos"
+),
+where(
+"cargo",
+"==",
+grupo
+)
+);
+
+const snap =
+await getDocs(
+q
+);
+
+let html = `
+
+<h2>
+📋 Chamada
+</h2>
+
+<table>
+
+<tr>
+
+<th>
+Nome
+</th>
+
+<th>
+Status
+</th>
+
+<th>
+Justificativa
+</th>
+
+</tr>
+
+`;
+
+snap.forEach(
+docx=>{
+
+const d =
+docx.data();
+
+html += `
+
+<tr>
+
+<td>
+${d.nome}
+</td>
+
+<td>
+
+<select
+id="status_${docx.id}">
+
+<option value="">
+Selecionar
+</option>
+
+<option>
+P
+</option>
+
+<option>
+F
+</option>
+
+<option>
+FJ
+</option>
+
+<option>
+D
+</option>
+
+</select>
+
+</td>
+
+<td>
+
+<input
+placeholder="Obrigatório se FJ"
+id="just_${docx.id}">
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+html += `
+
+</table>
+
+<button
+class="btn"
+onclick="salvarChamada(
+'${grupo}'
+)">
+
+Salvar Chamada
+
+</button>
+
+`;
+
+box.innerHTML =
+html;
+
+}
+
+if(
+acaoAtual
+===
+"pedidos"
+){
+
+const q =
+query(
+collection(
+db,
+"pedidos"
+),
+where(
+"cargo",
+"==",
+grupo
+)
+);
+
+const snap =
+await getDocs(
+q
+);
+
+let html =
+"<h2>📦 Pedidos</h2>";
+
+snap.forEach(
+docx=>{
+
+const d =
+docx.data();
+
+html += `
+
+<div class="item">
+
+<b>
+${d.nome}
+</b>
+
+<br>
+
+${d.data}
+
+<br><br>
+
+${d.pedido}
+
+<br><br>
+
+<textarea
+id="edit_${docx.id}">
+
+${d.pedido}
+
+</textarea>
+
+<button
+class="btn"
+onclick="editarPedido(
+'${docx.id}'
+)">
+
+Salvar Alteração
+
+</button>
+
+</div>
+
+`;
+
+});
+
+box.innerHTML =
+html;
+
+}
+
+if(
+acaoAtual
+===
+"atividades"
+){
+
+box.innerHTML = `
+
+<h2>
+📚 Nova Atividade
+</h2>
+
+<input
+id="atividadeNome"
+placeholder="Nome">
+
+<input
+type="date"
+id="envio">
+
+<input
+type="date"
+id="entrega">
+
+<button
+class="btn"
+onclick="salvarAtividade(
+'${grupo}'
+)">
+
+Salvar
+
+</button>
+
+`;
+
+}
+
+if(
+acaoAtual
+===
+"visualizar"
+){
+
+const ref =
+doc(
+db,
+"atividades",
+grupo
+);
+
+const snap =
+await getDoc(
+ref
+);
+
+if(
+!snap.exists()
+){
+
+box.innerHTML =
+"Sem atividades";
+
+return;
+
+}
+
+const dados =
+snap.data();
+
+let html =
+`<h2>
+📨 Atividades
+Solicitadas
+</h2>`;
+
+dados.atividades
+.forEach(
+at=>{
+
+html += `
+
+<div class="item">
+
+<h3>
+${at.nome}
+</h3>
+
+<b>
+Entregaram:
+</b>
+
+<br><br>
+
+${
+at.enviados
+?.join("<br>")
+||
+"Ninguém"
+}
+
+</div>
+
+`;
+
+});
+
+box.innerHTML =
+html;
+
+}
+
+if(
+acaoAtual
+===
+"editar"
+){
+
+const q =
+query(
+collection(
+db,
+"alunos"
+),
+where(
+"cargo",
+"==",
+grupo
+)
+);
+
+const snap =
+await getDocs(
+q
+);
+
+let html = `
+
+<h2>
+✏ Editar Turma
+</h2>
+
+<input
+id="novoNome"
+placeholder="Nome">
+
+<input
+id="novoMotivo"
+placeholder="Motivo">
+
+<input
+id="novaFoto"
+placeholder="Foto URL">
+
+<button
+class="btn"
+onclick="adicionarAluno(
+'${grupo}'
+)">
+
+Adicionar Aluno
+
+</button>
+
+<hr><br>
+
+`;
+
+snap.forEach(
+docx=>{
+
+const d =
+docx.data();
+
+html += `
+
+<div class="item">
+
+${d.nome}
+
+<br><br>
+
+<button
+class="btn btn-red"
+onclick="excluirAluno(
+'${docx.id}'
+)">
+
+Excluir
+
+</button>
+
+</div>
+
+`;
+
+});
+
+box.innerHTML =
+html;
+
+}
+
+}
+
 </script>
 </body>
 </html>
